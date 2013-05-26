@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>me.bayes</groupId>
+  <artifactId>vertx-route-ext</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Jaxrs Extension</name>
+  <description>Jaxrs extension for creating REST services with Vertx</description>
+  
+  <scm>
+  	<url>https://github.com/kevinbayes/vertx-route-ext</url>
+  	<connection>https://github.com/kevinbayes/vertx-route-ext.git</connection>
+  </scm>
+  
+  <developers>
+  	<developer>
+  		<id>kevinbayes</id>
+  		<name>Kevin Bayes</name>
+  		<email>kevin@bayes.me</email>
+  		<organizationUrl>http://www.bayes.me</organizationUrl>
+  		<roles>
+  			<role>Software Engineer</role>
+  		</roles>
+  	</developer>
+  </developers>
+  
+  <properties>
+  	<vertx.version>1.3.1.final</vertx.version>
+  	<jaxrs.version>2.0-rc3</jaxrs.version>
+  </properties>
+  
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>org.vert-x</groupId>
+  		<artifactId>vertx-core</artifactId>
+  		<version>${vertx.version}</version>
+  	</dependency>
+  	
+  	<dependency>
+	    <groupId>org.vert-x</groupId>
+	    <artifactId>vertx-lang-java</artifactId>
+	    <version>${vertx.version}</version>
+	</dependency>
+  	
+  	<dependency>
+	    <groupId>org.vert-x</groupId>
+	    <artifactId>vertx-platform</artifactId>
+	    <version>${vertx.version}</version>
+	</dependency>
+
+  	<dependency>
+	    <groupId>javax.ws.rs</groupId>
+	    <artifactId>javax.ws.rs-api</artifactId>
+	    <version>${jaxrs.version}</version>
+	</dependency>
+  </dependencies>
+
+</project>
