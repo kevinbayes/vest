@@ -5,9 +5,7 @@ import java.util.Map;
 
 public class BuilderContext {
 	
-	public static final String JAXRS_APPLICATION = "jaxrs.application";
-	
-	public Map<String, Object> properties = new HashMap<String, Object>(0);
+	public final Map<String, Object> properties = new HashMap<String, Object>(0);
 	
 	public BuilderContext() {
 	}

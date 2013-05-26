@@ -4,10 +4,19 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
 
+import me.bayes.vertx.extension.AbstractRouteMatcherBuilder;
 import me.bayes.vertx.extension.BuilderContext;
 import me.bayes.vertx.extension.RouteMatcherBuilder;
 
@@ -15,16 +24,49 @@ import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
 
-public class SimpleRouteMatcherBuilder implements RouteMatcherBuilder {
+/**
+ * The {@link SimpleRouteMatcherBuilder} is a basic {@link RouteMatcherBuilder} that
+ * uses the {@link Application} to get classes that are candidates for adding to
+ * the {@link RouteMatcher}.
+ * 
+ * This simple logic searches the given classes for the {@link Path} annotation
+ * and uses that with the combination of the {@link Path} anotation on method level
+ * to create the route that the method will handle. Once the path is established
+ * a {@link Handler} is added to the route matcher for the specific path. The method
+ * associated with the {@link Handler} is derived from either one of the {@link GET},
+ * {@link POST}, {@link PUT}, {@link DELETE}, {@link OPTIONS} xor {@link HEAD} annotations
+ * on the method.
+ * 
+ * TODO: {@link PathParam} annotation support.
+ * TODO: {@link Context} annotation support.
+ * TODO: Add verticle reference injection through {@link Context} annotation.
+ * 
+ * @author Kevin Bayes
+ * @since 1.0
+ * @version 1.0
+ *
+ */
+public class SimpleRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 
-	public RouteMatcher build(BuilderContext context) throws Exception {
+	/**
+	 * Requires a {@link BuilderContext}.
+	 * @param context
+	 */
+	public SimpleRouteMatcherBuilder(final BuilderContext context) {
+		super(context);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see me.bayes.vertx.extension.RouteMatcherBuilder#build(me.bayes.vertx.extension.BuilderContext)
+	 */
+	protected RouteMatcher buildInternal() throws Exception {
 		
-		final RouteMatcher routeMatcher = new RouteMatcher();
-		
-		Application jaxrsApplication = context.getPropertyValue(BuilderContext.JAXRS_APPLICATION, Application.class);
+		final Application jaxrsApplication = context.getPropertyValue(JaxrsBuilderContextProperty.JAXRS_APPLICATION, Application.class);
 		
 		final Set<Class<?>> classes = jaxrsApplication.getClasses();
 		
+		//loop through classes and add then to the route matcher
 		for(Class<?> clazz : classes) {
 			addClassRoutes(routeMatcher, clazz);
 		}
@@ -32,6 +74,12 @@ public class SimpleRouteMatcherBuilder implements RouteMatcherBuilder {
 		return routeMatcher;
 	}
 	
+	/**
+	 * 
+	 * @param routeMatcher
+	 * @param clazz
+	 * @throws Exception
+	 */
 	private void addClassRoutes(final RouteMatcher routeMatcher, final Class<?> clazz) throws Exception {
 		
 		final Path pathAnnotation = clazz.getAnnotation(Path.class);
@@ -45,14 +93,21 @@ public class SimpleRouteMatcherBuilder implements RouteMatcherBuilder {
 		
 	}
 	
+	
+	/**
+	 * 
+	 * @param routeMatcher
+	 * @param clazz
+	 * @param path
+	 * @param method
+	 * @throws Exception
+	 */
 	private void addMethodRoutes(final RouteMatcher routeMatcher, Class<?> clazz, String path, Method method) throws Exception {
 		
 		final Path pathAnnotation = method.getAnnotation(Path.class);
 		path += (pathAnnotation == null) ? "" : pathAnnotation.value();
 		
-		
-		
-		HttpMethod httpMethod = resolveHttpType(method);
+		final HttpMethod httpMethod = resolveHttpType(method);
 		
 		if(httpMethod == null) {
 			return;
@@ -61,6 +116,13 @@ public class SimpleRouteMatcherBuilder implements RouteMatcherBuilder {
 		addRoute(routeMatcher, clazz, method, httpMethod, path);
 	}
 	
+	
+	/**
+	 * Look for the HTTP verb which should be {@link GET}, {@link POST}, {@link PUT}, {@link DELETE}, {@link OPTIONS} or {@link HEAD}.
+	 * 
+	 * @param method - that potentially has an annotation.
+	 * @return {@link HttpMethod} or null.
+	 */
 	private HttpMethod resolveHttpType(Method method) {
 		for(Annotation annotation : method.getDeclaredAnnotations()) {
 			final HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
@@ -72,6 +134,17 @@ public class SimpleRouteMatcherBuilder implements RouteMatcherBuilder {
 	}
 	
 	
+	
+	/**
+	 * The simplest case adds routes and delegates the execution to the method annotated with the {@link Path} annotation. 
+	 * 
+	 * @param routeMatcher
+	 * @param clazz
+	 * @param method
+	 * @param httpMethod
+	 * @param path
+	 * @throws Exception
+	 */
 	private void addRoute(final RouteMatcher routeMatcher, final Class<?> clazz, final Method method, final HttpMethod httpMethod, String path) throws Exception {
 
 		final Method routeMatcherMethod = RouteMatcher.class.getMethod(
@@ -79,13 +152,14 @@ public class SimpleRouteMatcherBuilder implements RouteMatcherBuilder {
 				String.class,
 				Handler.class);
 		
-		routeMatcherMethod.invoke(routeMatcher, path, new Handler<HttpServerRequest>() {
+		routeMatcherMethod.invoke(routeMatcher, JaxrsToVertxPathConverter.convertPath(path.replaceAll("//", "/")), //crude way to remove double "//"
+				new Handler<HttpServerRequest>() {
 		
-			Object delegate = clazz.getConstructor().newInstance();
+			final Object delegate = clazz.getConstructor().newInstance();
 			
 			public void handle(HttpServerRequest request) {
 				try {
-
+					
 					method.invoke(delegate, request);
 						
 				} catch (Exception e) {
@@ -96,5 +170,4 @@ public class SimpleRouteMatcherBuilder implements RouteMatcherBuilder {
 			
 	}
 	
-
 }

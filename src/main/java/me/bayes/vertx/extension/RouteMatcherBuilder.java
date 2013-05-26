@@ -1,6 +1,7 @@
 package me.bayes.vertx.extension;
 
 
+
 import org.vertx.java.core.http.RouteMatcher;
 
 /**
@@ -17,16 +18,18 @@ import org.vertx.java.core.http.RouteMatcher;
 public interface RouteMatcherBuilder {
 
 	/**
-	 * Executing this method ensures that a {@link RouteMatcher} is build using
-	 * the context provided. A typical example would be:
-	 * <code>
+	 * Executing this method ensures that a {@link RouteMatcher} is built.
 	 * 
-	 * </code>
-	 * 
-	 * @param context
 	 * @return
 	 * @throws Exception
 	 */
-	RouteMatcher build(BuilderContext context) throws Exception;
+	RouteMatcher build() throws Exception;
+	
+	/**
+	 * Set the context for building the route.
+	 * 
+	 * @param context
+	 */
+	void setContext(BuilderContext context);
 	
 }
