@@ -1,6 +1,7 @@
 package me.bayes.vertx.extension.jaxrs;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -19,8 +20,10 @@ import javax.ws.rs.core.Context;
 import me.bayes.vertx.extension.AbstractRouteMatcherBuilder;
 import me.bayes.vertx.extension.BuilderContext;
 import me.bayes.vertx.extension.RouteMatcherBuilder;
+import me.bayes.vertx.extension.util.ContextUtil;
 
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.Vertx;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
 
@@ -155,7 +158,15 @@ public class SimpleRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 		routeMatcherMethod.invoke(routeMatcher, JaxrsToVertxPathConverter.convertPath(path.replaceAll("//", "/")), //crude way to remove double "//"
 				new Handler<HttpServerRequest>() {
 		
-			final Object delegate = clazz.getConstructor().newInstance();
+			private final Object delegate;
+			
+			{
+				delegate = clazz.getConstructor().newInstance();
+				
+				ContextUtil.assignContextFields(clazz, delegate, context);
+			}
+			
+			
 			
 			public void handle(HttpServerRequest request) {
 				try {

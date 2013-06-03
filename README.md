@@ -7,10 +7,13 @@ Current Support
 ===============
 - @Path (without regular expressions)
 - @POST, @PUT, @GET, @DELETE, @OPTION and @HEAD
+- @Context limited support for vertx and jsonobject
 
 TODO
 ====
+- Package scanning Application
+- Multisource scanning Application
 - @PathParam
-- @Context
+- @Context - Generic support for all objects in the builder context.
 - @Consumes
 - @Produces

@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class BuilderContext {
 	
-	public final Map<String, Object> properties = new HashMap<String, Object>(0);
+	private final Map<String, Object> properties = new HashMap<String, Object>(0);
 	
 	public BuilderContext() {
 	}
@@ -20,6 +20,10 @@ public class BuilderContext {
 	
 	public Object getPropertyValue(String key) {
 		return properties.get(key);
+	}
+	
+	public Map<String, Object> getProperties() {
+		return this .properties;
 	}
 
 }
