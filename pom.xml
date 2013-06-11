@@ -35,18 +35,21 @@
   		<groupId>org.vert-x</groupId>
   		<artifactId>vertx-core</artifactId>
   		<version>${vertx.version}</version>
+  		<scope>provided</scope>
   	</dependency>
   	
   	<dependency>
 	    <groupId>org.vert-x</groupId>
 	    <artifactId>vertx-lang-java</artifactId>
 	    <version>${vertx.version}</version>
+	    <scope>provided</scope>
 	</dependency>
   	
   	<dependency>
 	    <groupId>org.vert-x</groupId>
 	    <artifactId>vertx-platform</artifactId>
 	    <version>${vertx.version}</version>
+	    <scope>provided</scope>
 	</dependency>
 
   	<dependency>
@@ -63,5 +66,19 @@
   	</dependency>
 
   </dependencies>
+  
+  <build>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-compiler-plugin</artifactId>
+  			<version>3.1</version>
+  			<configuration>
+  				<source>1.7</source>
+  				<target>1.7</target>
+  			</configuration>
+  		</plugin>
+  	</plugins>
+  </build>
 
 </project>

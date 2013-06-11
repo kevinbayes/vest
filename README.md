@@ -8,12 +8,19 @@ Current Support
 - @Path (without regular expressions)
 - @POST, @PUT, @GET, @DELETE, @OPTION and @HEAD
 - @Context limited support for vertx and jsonobject
+- Package scanning Application
+- Multisource scanning Application
 
 TODO
 ====
-- Package scanning Application
-- Multisource scanning Application
+- Application singletons
+- Application shared property map
 - @PathParam
-- @Context - Generic support for all objects in the builder context.
 - @Consumes
 - @Produces
+- @MatrixParam Extracts the value of a URI matrix parameter.
+- @QueryParam Extracts the value of a URI query parameter.
+- @PathParam Extracts the value of a URI template parameter.
+- @CookieParam Extracts the value of a cookie.
+- @HeaderParam Extracts the value of a header.
+- @Context Injects an instance of a supported resource.

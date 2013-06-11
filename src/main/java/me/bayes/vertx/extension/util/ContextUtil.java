@@ -11,7 +11,7 @@ import org.vertx.java.core.Vertx;
 import org.vertx.java.core.json.JsonObject;
 
 import me.bayes.vertx.extension.BuilderContext;
-import me.bayes.vertx.extension.jaxrs.JaxrsBuilderContextProperty;
+import me.bayes.vertx.extension.jaxrs.BuilderContextProperty;
 
 /**
  * A utility class used to work with the {@link Context} annotation.
@@ -46,7 +46,7 @@ public final class ContextUtil {
 				
 				if(field.getAnnotation(Context.class) != null) {
 					if(Vertx.class.equals(field.getType())) {
-						final Vertx vertx = context.getPropertyValue(JaxrsBuilderContextProperty.VERTX_INSTANCE, Vertx.class);
+						final Vertx vertx = context.getPropertyValue(BuilderContextProperty.VERTX_INSTANCE, Vertx.class);
 						if(vertx != null) {
 							boolean accessible = field.isAccessible();
 							field.setAccessible(true);
@@ -54,7 +54,7 @@ public final class ContextUtil {
 							field.setAccessible(accessible);
 						}
 					} else if(JsonObject.class.equals(field.getType())) {
-						final JsonObject jsonObject = context.getPropertyValue(JaxrsBuilderContextProperty.JSON_CONFIG, JsonObject.class);
+						final JsonObject jsonObject = context.getPropertyValue(BuilderContextProperty.JSON_CONFIG, JsonObject.class);
 						if(jsonObject != null) {
 							field.setAccessible(true);
 							field.set(instance, jsonObject);

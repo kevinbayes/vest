@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
@@ -14,6 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 
@@ -28,7 +30,7 @@ import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
 
 /**
- * The {@link SimpleRouteMatcherBuilder} is a basic {@link RouteMatcherBuilder} that
+ * The {@link JaxrsRouteMatcherBuilder} is a basic {@link RouteMatcherBuilder} that
  * uses the {@link Application} to get classes that are candidates for adding to
  * the {@link RouteMatcher}.
  * 
@@ -42,6 +44,8 @@ import org.vertx.java.core.http.RouteMatcher;
  * 
  * TODO: {@link PathParam} annotation support.
  * TODO: {@link Context} annotation support.
+ * TODO: {@link Consumes}
+ * TODO: {@link Produces}
  * TODO: Add verticle reference injection through {@link Context} annotation.
  * 
  * @author Kevin Bayes
@@ -49,13 +53,13 @@ import org.vertx.java.core.http.RouteMatcher;
  * @version 1.0
  *
  */
-public class SimpleRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
+public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 
 	/**
 	 * Requires a {@link BuilderContext}.
 	 * @param context
 	 */
-	public SimpleRouteMatcherBuilder(final BuilderContext context) {
+	public JaxrsRouteMatcherBuilder(final BuilderContext context) {
 		super(context);
 	}
 	
@@ -65,7 +69,7 @@ public class SimpleRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	 */
 	protected RouteMatcher buildInternal() throws Exception {
 		
-		final Application jaxrsApplication = context.getPropertyValue(JaxrsBuilderContextProperty.JAXRS_APPLICATION, Application.class);
+		final Application jaxrsApplication = context.getPropertyValue(BuilderContextProperty.JAXRS_APPLICATION, Application.class);
 		
 		final Set<Class<?>> classes = jaxrsApplication.getClasses();
 		
@@ -87,11 +91,12 @@ public class SimpleRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 		
 		final Path pathAnnotation = clazz.getAnnotation(Path.class);
 		
-		final String path = 
-				(pathAnnotation == null) ? "" : pathAnnotation.value();
+		if(pathAnnotation == null) {
+			return;
+		}
 		
 		for(Method method : clazz.getMethods()) {
-			addMethodRoutes(routeMatcher, clazz, path, method);
+			addMethodRoutes(routeMatcher, clazz, pathAnnotation.value(), method);
 		}
 		
 	}
@@ -108,6 +113,7 @@ public class SimpleRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	private void addMethodRoutes(final RouteMatcher routeMatcher, Class<?> clazz, String path, Method method) throws Exception {
 		
 		final Path pathAnnotation = method.getAnnotation(Path.class);
+		
 		path += (pathAnnotation == null) ? "" : pathAnnotation.value();
 		
 		final HttpMethod httpMethod = resolveHttpType(method);
@@ -165,8 +171,6 @@ public class SimpleRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 				
 				ContextUtil.assignContextFields(clazz, delegate, context);
 			}
-			
-			
 			
 			public void handle(HttpServerRequest request) {
 				try {
