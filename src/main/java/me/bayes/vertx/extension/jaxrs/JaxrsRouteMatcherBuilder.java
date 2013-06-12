@@ -1,12 +1,12 @@
 package me.bayes.vertx.extension.jaxrs;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HttpMethod;
@@ -24,8 +24,9 @@ import me.bayes.vertx.extension.BuilderContext;
 import me.bayes.vertx.extension.RouteMatcherBuilder;
 import me.bayes.vertx.extension.util.ContextUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
 
@@ -54,6 +55,10 @@ import org.vertx.java.core.http.RouteMatcher;
  *
  */
 public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
+	
+	private static final String METHOD_HAS_NO_PARAMETERS = "Method %s has no parameters.";
+	
+	private static final Logger LOG = LoggerFactory.getLogger(JaxrsRouteMatcherBuilder.class);
 
 	/**
 	 * Requires a {@link BuilderContext}.
@@ -122,6 +127,11 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			return;
 		}
 		
+		//3.3.1	Visibility Only public methods may be exposed as resource methods.
+		if(method.getModifiers() != Method.PUBLIC) {
+			LOG.warn("Method {} is not public and is annotated with @Path.", method.getName());
+		}
+		
 		addRoute(routeMatcher, clazz, method, httpMethod, path);
 	}
 	
@@ -172,13 +182,44 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 				ContextUtil.assignContextFields(clazz, delegate, context);
 			}
 			
-			public void handle(HttpServerRequest request) {
+			public void handle(final HttpServerRequest request) {
 				try {
 					
-					method.invoke(delegate, request);
+					final Class<?>[] parameterTypes = method.getParameterTypes();
+					
+					if(parameterTypes.length > 0) {
+					
+						final Object[] parameters = new Object[parameterTypes.length];
+						final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+					
+						parameters[0] = request;
 						
+						for(int i = 1; i < parameters.length; i++) {
+							
+							if(parameterAnnotations[i].length > 0) {
+								final Annotation paramAnnotation = parameterAnnotations[i][0];
+								if(paramAnnotation.annotationType().equals(PathParam.class)) {
+									PathParam pathParamAnnotation = PathParam.class.cast(paramAnnotation);
+									parameters[1] = request.params().get(pathParamAnnotation.value());
+								}
+							}
+						}
+					
+						method.invoke(delegate, parameters);
+					} else {
+						throw new NoMethodParametersFoundException(String.format(METHOD_HAS_NO_PARAMETERS, method.getName()));
+					}
+						
+				} catch (NoMethodParametersFoundException e) { 
+					LOG.error("No parameters found.", e);
+					request.response.statusCode = 500;
+					request.response.statusMessage = "Internal server error";
+					request.response.end(e.getMessage());
 				} catch (Exception e) {
-					e.printStackTrace();
+					LOG.error("Exception occurred.", e);
+					request.response.statusCode = 500;
+					request.response.statusMessage = "Internal server error";
+					request.response.end(e.getMessage());
 				}
 			}
 		});
