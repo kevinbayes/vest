@@ -23,6 +23,8 @@ import me.bayes.vertx.extension.AbstractRouteMatcherBuilder;
 import me.bayes.vertx.extension.BuilderContext;
 import me.bayes.vertx.extension.RouteMatcherBuilder;
 import me.bayes.vertx.extension.util.ContextUtil;
+import me.bayes.vertx.extension.util.ParameterUtil;
+import me.bayes.vertx.extension.util.UriPathUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,9 +80,11 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 		
 		final Set<Class<?>> classes = jaxrsApplication.getClasses();
 		
+		final String applicationContextPath = UriPathUtil.getApplicationContext(jaxrsApplication);
+		
 		//loop through classes and add then to the route matcher
 		for(Class<?> clazz : classes) {
-			addClassRoutes(routeMatcher, clazz);
+			addClassRoutes(routeMatcher, clazz, applicationContextPath);
 		}
 		
 		return routeMatcher;
@@ -92,7 +96,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	 * @param clazz
 	 * @throws Exception
 	 */
-	private void addClassRoutes(final RouteMatcher routeMatcher, final Class<?> clazz) throws Exception {
+	private void addClassRoutes(final RouteMatcher routeMatcher, final Class<?> clazz, String contextPath) throws Exception {
 		
 		final Path pathAnnotation = clazz.getAnnotation(Path.class);
 		
@@ -101,7 +105,16 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 		}
 		
 		for(Method method : clazz.getMethods()) {
-			addMethodRoutes(routeMatcher, clazz, pathAnnotation.value(), method);
+			
+			if(!method.getReturnType().equals(Void.TYPE)) { 
+				//Carry on if return type is not void as we are interested in async.
+				continue;
+			}
+			
+			addMethodRoutes(routeMatcher, 
+					clazz, 
+					UriPathUtil.concatPaths(contextPath, pathAnnotation.value()), 
+					method);
 		}
 		
 	}
@@ -170,8 +183,17 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 				httpMethod.value().toLowerCase(), 
 				String.class,
 				Handler.class);
+
+		//If the method does not have the right signature then just warn the user and return.
+		final Class<?>[] parameterTypes = method.getParameterTypes();
+		if(parameterTypes.length == 0 || !parameterTypes[0].equals(HttpServerRequest.class)) {
+			LOG.warn("Classes marked with @Path must have at least one parameter. The first parameter should be HttpServerRequest");
+			return;
+		}
 		
-		routeMatcherMethod.invoke(routeMatcher, JaxrsToVertxPathConverter.convertPath(path.replaceAll("//", "/")), //crude way to remove double "//"
+		final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+		
+		routeMatcherMethod.invoke(routeMatcher, JaxrsToVertxPathConverter.convertPath(path),
 				new Handler<HttpServerRequest>() {
 		
 			private final Object delegate;
@@ -185,36 +207,17 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			public void handle(final HttpServerRequest request) {
 				try {
 					
-					final Class<?>[] parameterTypes = method.getParameterTypes();
-					
-					if(parameterTypes.length > 0) {
-					
-						final Object[] parameters = new Object[parameterTypes.length];
-						final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-					
-						parameters[0] = request;
+					final Object[] parameters = new Object[parameterTypes.length];
+					parameters[0] = request;
 						
-						for(int i = 1; i < parameters.length; i++) {
-							
-							if(parameterAnnotations[i].length > 0) {
-								final Annotation paramAnnotation = parameterAnnotations[i][0];
-								if(paramAnnotation.annotationType().equals(PathParam.class)) {
-									PathParam pathParamAnnotation = PathParam.class.cast(paramAnnotation);
-									parameters[1] = request.params().get(pathParamAnnotation.value());
-								}
-							}
+					for(int i = 1; i < parameters.length; i++) {
+						if(parameterAnnotations[i].length > 0) {
+							ParameterUtil.resolveParameter(parameterTypes[i], parameterAnnotations[i], request);
 						}
-					
-						method.invoke(delegate, parameters);
-					} else {
-						throw new NoMethodParametersFoundException(String.format(METHOD_HAS_NO_PARAMETERS, method.getName()));
 					}
+					
+					method.invoke(delegate, parameters);
 						
-				} catch (NoMethodParametersFoundException e) { 
-					LOG.error("No parameters found.", e);
-					request.response.statusCode = 500;
-					request.response.statusMessage = "Internal server error";
-					request.response.end(e.getMessage());
 				} catch (Exception e) {
 					LOG.error("Exception occurred.", e);
 					request.response.statusCode = 500;
@@ -222,6 +225,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 					request.response.end(e.getMessage());
 				}
 			}
+			
 		});
 			
 	}
