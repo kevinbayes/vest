@@ -1,7 +1,7 @@
 vertx-route-ext
 ===============
 
-A library that can be used to easily create routes with minimal code in vertx. This initial implementation will support creating REST services in vertx using jax-rs annotations.
+A library that can be used to easily create routes with minimal code in vertx. This initial implementation will support creating REST services in vertx using jax-rs 2.0 (JSR339).
 
 Current Support
 ===============
@@ -24,3 +24,4 @@ TODO
 - @CookieParam Extracts the value of a cookie.
 - @HeaderParam Extracts the value of a header.
 - @Context Injects an instance of a supported resource.
+- Exceptions as per specification
