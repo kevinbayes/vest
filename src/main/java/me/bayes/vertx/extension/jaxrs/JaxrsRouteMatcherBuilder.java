@@ -13,7 +13,6 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
@@ -32,6 +31,7 @@ import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.RouteMatcher;
 
 /**
+ * <pre>
  * The {@link JaxrsRouteMatcherBuilder} is a basic {@link RouteMatcherBuilder} that
  * uses the {@link Application} to get classes that are candidates for adding to
  * the {@link RouteMatcher}.
@@ -44,11 +44,16 @@ import org.vertx.java.core.http.RouteMatcher;
  * {@link POST}, {@link PUT}, {@link DELETE}, {@link OPTIONS} xor {@link HEAD} annotations
  * on the method.
  * 
- * TODO: {@link PathParam} annotation support.
+ * Spec: 3.3.5 HEAD and OPTIONS is only supported for explicit request
+ *
  * TODO: {@link Context} annotation support.
  * TODO: {@link Consumes}
  * TODO: {@link Produces}
  * TODO: Add verticle reference injection through {@link Context} annotation.
+ * TODO: Add default behaviour for HEAD and OPTIONS according to 3.3.5.
+ * TODO: Handle exceptions better. 3.3.4 Exceptions
+ * TODO: 3.8 Determining the MediaType of Responses
+ * </pre>
  * 
  * @author Kevin Bayes
  * @since 1.0
@@ -105,6 +110,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			
 			if(!method.getReturnType().equals(Void.TYPE)) { 
 				//Carry on if return type is not void as we are interested in async.
+				//3.3.3	Return Type
 				continue;
 			}
 			
@@ -176,6 +182,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	 */
 	private void addRoute(final RouteMatcher routeMatcher, final Class<?> clazz, final Method method, final HttpMethod httpMethod, String path) throws Exception {
 
+		//3.7 Matching Requests to Resource Methods is delegated to vertx route matcher.
 		final Method routeMatcherMethod = RouteMatcher.class.getMethod(
 				httpMethod.value().toLowerCase(), 
 				String.class,
@@ -218,6 +225,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 					method.invoke(delegate, parameters);
 						
 				} catch (Exception e) {
+					//3.3.4	Exceptions TODO: Handle exception better.
 					LOG.error("Exception occurred.", e);
 					request.response.statusCode = 500;
 					request.response.statusMessage = "Internal server error";

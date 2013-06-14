@@ -10,19 +10,18 @@ Current Support
 - @Context limited support for vertx and jsonobject
 - Package scanning Application
 - Multisource scanning Application
+- @PathParam
+- @HeaderParam Extracts the value of a header.
+- @QueryParam Extracts the value of a URI query parameter.
 
 TODO
 ====
 - Application singletons
 - Application shared property map
-- @PathParam
 - @Consumes
 - @Produces
 - @MatrixParam Extracts the value of a URI matrix parameter.
-- @QueryParam Extracts the value of a URI query parameter.
-- @PathParam Extracts the value of a URI template parameter.
 - @CookieParam Extracts the value of a cookie.
-- @HeaderParam Extracts the value of a header.
 - @Context Injects an instance of a supported resource.
 - Exceptions as per specification
 - Cache Control
