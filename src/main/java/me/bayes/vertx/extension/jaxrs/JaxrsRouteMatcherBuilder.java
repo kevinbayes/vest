@@ -6,7 +6,6 @@ import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.HttpMethod;
@@ -57,8 +56,6 @@ import org.vertx.java.core.http.RouteMatcher;
  *
  */
 public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
-	
-	private static final String METHOD_HAS_NO_PARAMETERS = "Method %s has no parameters.";
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JaxrsRouteMatcherBuilder.class);
 
@@ -187,13 +184,15 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 		//If the method does not have the right signature then just warn the user and return.
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		if(parameterTypes.length == 0 || !parameterTypes[0].equals(HttpServerRequest.class)) {
-			LOG.warn("Classes marked with @Path must have at least one parameter. The first parameter should be HttpServerRequest");
+			LOG.warn("Classes marked with a HttpMethod must have at least one parameter. The first parameter should be HttpServerRequest.");
 			return;
 		}
 		
 		final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
 		
-		routeMatcherMethod.invoke(routeMatcher, JaxrsToVertxPathConverter.convertPath(path),
+		final String finalPath = JaxrsToVertxPathConverter.convertPath(path);
+		
+		routeMatcherMethod.invoke(routeMatcher, finalPath,
 				new Handler<HttpServerRequest>() {
 		
 			private final Object delegate;

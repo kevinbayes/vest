@@ -25,6 +25,9 @@ TODO
 - @HeaderParam Extracts the value of a header.
 - @Context Injects an instance of a supported resource.
 - Exceptions as per specification
+- Cache Control
+- Context Buildup
+- UriInfo implementation
 
 Notes
 =====
