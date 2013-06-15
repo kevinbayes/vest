@@ -1,5 +1,7 @@
-vertx-route-ext
-===============
+vertx-route-ext aka 'vest'
+==========================
+
+Taking inspiration from the reference implementation of Jaxrs "Jersey", this implementation of Jaxrs for vertx is named "Vest".
 
 A library that can be used to easily create routes with minimal code in vertx. This initial implementation will support creating REST services in vertx using jax-rs 2.0 (JSR339). The idea around this implementation is to create a framework on vertx, meaning that you would not be required to embed an implemenation such as Jersey, but rather leverage off the existing vertx platform.
 

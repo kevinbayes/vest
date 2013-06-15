@@ -36,7 +36,9 @@ public class VestVerticle extends AbstractVestVerticle {
 		
 		//Add packages to scan
 		if(vestPackagesToScan != null) {
-			application.addPackagesToScan((String[])vestPackagesToScan.toArray());
+			for(Object obj : vestPackagesToScan) {
+				application.addPackagesToScan(String.valueOf(obj));
+			}
 		}
 		
 		//Add classes
