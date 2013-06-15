@@ -9,4 +9,4 @@
  * @since 1.0
  * @version 1.0
  */
-package me.bayes.vertx.extension.jaxrs;
+package me.bayes.vertx.vest.jaxrs;

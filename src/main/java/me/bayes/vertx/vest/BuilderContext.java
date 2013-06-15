@@ -1,4 +1,4 @@
-package me.bayes.vertx.extension;
+package me.bayes.vertx.vest;
 
 import java.util.HashMap;
 import java.util.Map;

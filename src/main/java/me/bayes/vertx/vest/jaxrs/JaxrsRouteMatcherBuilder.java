@@ -1,4 +1,4 @@
-package me.bayes.vertx.extension.jaxrs;
+package me.bayes.vertx.vest.jaxrs;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -17,12 +17,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 
-import me.bayes.vertx.extension.AbstractRouteMatcherBuilder;
-import me.bayes.vertx.extension.BuilderContext;
-import me.bayes.vertx.extension.RouteMatcherBuilder;
-import me.bayes.vertx.extension.util.ContextUtil;
-import me.bayes.vertx.extension.util.ParameterUtil;
-import me.bayes.vertx.extension.util.UriPathUtil;
+import me.bayes.vertx.vest.AbstractRouteMatcherBuilder;
+import me.bayes.vertx.vest.BuilderContext;
+import me.bayes.vertx.vest.RouteMatcherBuilder;
+import me.bayes.vertx.vest.util.ContextUtil;
+import me.bayes.vertx.vest.util.ParameterUtil;
+import me.bayes.vertx.vest.util.UriPathUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

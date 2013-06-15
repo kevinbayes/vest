@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.extension.util;
+package me.bayes.vertx.vest.util;
 
 import java.lang.annotation.Annotation;
 

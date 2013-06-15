@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.extension.util;
+package me.bayes.vertx.vest.util;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;

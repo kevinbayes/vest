@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.extension.jaxrs;
+package me.bayes.vertx.vest.jaxrs;
 
 import javax.ws.rs.core.Context;
 

@@ -2,6 +2,8 @@ package me.bayes.vertx.extension.jaxrs;
 
 import static org.junit.Assert.*;
 
+import me.bayes.vertx.vest.jaxrs.JaxrsToVertxPathConverter;
+
 import org.junit.Test;
 
 public class TestJaxrsToVertxPathConverter {

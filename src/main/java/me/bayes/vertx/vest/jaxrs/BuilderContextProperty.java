@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.extension.jaxrs;
+package me.bayes.vertx.vest.jaxrs;
 
 /**
  * All the properties that the context should contain.
@@ -14,6 +14,7 @@ public interface BuilderContextProperty {
 	
 	String JAXRS_APPLICATION = "jaxrs.application";
 	String VERTX_INSTANCE = "vertx.instance";
+	String CONTAINER_INSTANCE = "container.instance";
 	String JSON_CONFIG = "json.config";
 
 }

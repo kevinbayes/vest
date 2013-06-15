@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.extension.util;
+package me.bayes.vertx.vest.util;
 
 import java.lang.reflect.Field;
 
@@ -10,8 +10,8 @@ import javax.ws.rs.core.Context;
 import org.vertx.java.core.Vertx;
 import org.vertx.java.core.json.JsonObject;
 
-import me.bayes.vertx.extension.BuilderContext;
-import me.bayes.vertx.extension.jaxrs.BuilderContextProperty;
+import me.bayes.vertx.vest.BuilderContext;
+import me.bayes.vertx.vest.jaxrs.BuilderContextProperty;
 
 /**
  * A utility class used to work with the {@link Context} annotation.

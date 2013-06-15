@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.extension.jaxrs;
+package me.bayes.vertx.vest.jaxrs;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -28,9 +28,9 @@ import org.vertx.java.deploy.impl.java.PackageHelper;
  * TODO: GET SINGLETONS
  * TODO: Package scanning of sub packages
  */
-public abstract class VertxApplication extends Application {
+public abstract class VestApplication extends Application {
 	
-	private final static Logger LOG = LoggerFactory.getLogger(VertxApplication.class);
+	private final static Logger LOG = LoggerFactory.getLogger(VestApplication.class);
 	
 	/*
 	 * Classloader to load scanned classes.
@@ -57,7 +57,7 @@ public abstract class VertxApplication extends Application {
 	/**
 	 * @param packagesToScan for classes annotated with {@link Path}. 
 	 */
-	public void addPackagesToScan(Set<String> packagesToScan) {
+	public void addPackagesToScan(Collection<String> packagesToScan) {
 		this.packagesToScan.addAll(packagesToScan);
 		addScannedClasses();
 	}
@@ -76,7 +76,15 @@ public abstract class VertxApplication extends Application {
 	 * @param endpointClasses to add to the classes annotated with {@link Path}. 
 	 * 		  If not annotated with {@link Path} it will be ignored.
 	 */
-	public void addEndpointClasses(Set<Class<?>> endpointClasses) {
+	public void addEndpointClasses(Collection<Class<?>> endpointClasses) {
+		for(Class<?> clazz : endpointClasses) {
+			if(clazz.getAnnotation(Path.class) != null) {
+				this.endpointClasses.add(clazz);
+			}
+		}
+	}
+	
+	public void addEndpointClasses(Class<?>... endpointClasses) {
 		for(Class<?> clazz : endpointClasses) {
 			if(clazz.getAnnotation(Path.class) != null) {
 				this.endpointClasses.add(clazz);

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.extension.jaxrs.sample;
+package me.bayes.vertx.vest.jaxrs.sample;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

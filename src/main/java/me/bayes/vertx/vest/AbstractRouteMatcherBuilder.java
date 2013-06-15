@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.extension;
+package me.bayes.vertx.vest;
 
 
 import org.vertx.java.core.http.RouteMatcher;
