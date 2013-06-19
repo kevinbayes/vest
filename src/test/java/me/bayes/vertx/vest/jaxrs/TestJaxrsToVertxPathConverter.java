@@ -1,4 +1,4 @@
-package me.bayes.vertx.extension.jaxrs;
+package me.bayes.vertx.vest.jaxrs;
 
 import static org.junit.Assert.*;
 

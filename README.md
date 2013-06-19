@@ -18,18 +18,27 @@ Current Support
 
 TODO
 ====
-- Application singletons
-- Application shared property map
-- @Consumes
-- @Produces
-- @MatrixParam Extracts the value of a URI matrix parameter.
-- @CookieParam Extracts the value of a cookie.
-- @Context Injects an instance of a supported resource.
-- Exceptions as per specification
-- Cache Control
-- Context Buildup
-- UriInfo implementation
+Check issues
+
+Introduction
+============
+The vestframework is an implementation of the JSR339 specification. It allows you to use the specification to develop Http REST services using vertx.
+The framework has the following 3 main components:
+- BuilderContext
+- RouteMatcherBuilder
+- VestApplication
+
+The BuilderContext provides the RouteMatcherBuilder context for building a RouteMatcher from classes using the jaxrs annotations. VestApplication is the abstract implementation of the jaxrs Application that is used by the builder to initialize the rest services.
+
+Quick start
+===========
+TODO
+
+Example
+=======
+TODO
 
 Notes
 =====
 1. Section 3.7 (Matching Requests to Resource Methods) will be ignored and matching requests will be delegated to the RouteMatcher.
+
