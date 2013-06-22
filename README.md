@@ -36,7 +36,47 @@ TODO
 
 Example
 =======
-TODO
+There are 3 steps to get up and running in the simplest case:
+1. Create an implementation of the VestApplication and annotate it with @ApplicationPath to set the context.
+```java
+@ApplicationPath("/sample")
+public class VertxApplication extends me.bayes.vertx.vest.jaxrs.VestApplication {
+}
+
+```
+
+2. Annotate your classes that handle http requests with the jaxrs annotations. Note the first parameter must always be the HttpServerRequest.
+```java
+@Path("/entity")
+public class EntityHandler extends VertxAwareHandler {
+		
+	@GET
+	public void get(HttpServerRequest serverRequest) {
+		serverRequest.response.headers().put("Content-Type", "text/html; charset=UTF-8");
+		serverRequest.response.end("<html><body><h1>Hello from vest!</h1></body></html>");
+	}
+
+}
+```
+
+3. Use the JaxrsRoute
+```java
+Vertx vertx = Vertx.newVertx();
+VertxApplication application = new VertxApplication();
+application.addPackagesToScan("me.bayes.base.entity.vertx.handlers");
+
+HttpServer server = vertx.createHttpServer();
+
+BuilderContext context = new BuilderContext();
+context.addProperty(BuilderContextProperty.JAXRS_APPLICATION, application);
+context.addProperty(BuilderContextProperty.VERTX_INSTANCE, vertx);
+	
+RouteMatcherBuilder builder = new JaxrsRouteMatcherBuilder(context);
+server.requestHandler(builder.build());
+
+server.listen(18080);
+```
+4. Now navigate to http://localhost:18080/sample/entity
 
 Notes
 =====
