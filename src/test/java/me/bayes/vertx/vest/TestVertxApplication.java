@@ -1,13 +1,13 @@
-package me.bayes.vertx.vest.jaxrs;
+package me.bayes.vertx.vest;
 
 import static org.junit.Assert.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import me.bayes.vertx.vest.jaxrs.VestApplication;
-import me.bayes.vertx.vest.jaxrs.sample.PingEndpoint;
-import me.bayes.vertx.vest.jaxrs.sample.other.OtherEndpoint;
+import me.bayes.vertx.vest.VestApplication;
+import me.bayes.vertx.vest.sample.PingEndpoint;
+import me.bayes.vertx.vest.sample.other.OtherEndpoint;
 
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class TestVertxApplication {
 		VestApplication application = new VestApplication() {
 		};
 		Set<String> packages = new HashSet<String>(1);
-		packages.add("me.bayes.vertx.vest.jaxrs.sample");
+		packages.add("me.bayes.vertx.vest.sample");
 		
 		//When
 		application.addPackagesToScan(packages);
@@ -36,7 +36,7 @@ public class TestVertxApplication {
 		};
 		
 		//When
-		application.addEndpointClasses(me.bayes.vertx.vest.jaxrs.sample.PingEndpoint.class);
+		application.addEndpointClasses(me.bayes.vertx.vest.sample.PingEndpoint.class);
 		
 		//Then
 		assertTrue(application.getClasses().size() == 1);
@@ -50,11 +50,11 @@ public class TestVertxApplication {
 		VestApplication application = new VestApplication() {
 		};
 		Set<String> packages = new HashSet<String>(1);
-		packages.add("me.bayes.vertx.vest.jaxrs.sample.other");
+		packages.add("me.bayes.vertx.vest.sample.other");
 		
 		//When
 		application.addPackagesToScan(packages);
-		application.addEndpointClasses(me.bayes.vertx.vest.jaxrs.sample.PingEndpoint.class);
+		application.addEndpointClasses(me.bayes.vertx.vest.sample.PingEndpoint.class);
 		
 		//Then
 		assertTrue(application.getClasses().size() == 2);

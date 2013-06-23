@@ -1,4 +1,4 @@
-package me.bayes.vertx.vest.jaxrs.endpoint;
+package me.bayes.vertx.vest.endpoint;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -6,7 +6,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import me.bayes.vertx.vest.jaxrs.VertxAwareHandler;
+import me.bayes.vertx.vest.VertxAwareHandler;
 
 import org.vertx.java.core.http.HttpServerRequest;
 

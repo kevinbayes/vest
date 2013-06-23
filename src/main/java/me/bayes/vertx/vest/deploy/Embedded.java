@@ -1,10 +1,10 @@
 /**
  * 
  */
-package me.bayes.vertx.vest.jaxrs.deploy;
+package me.bayes.vertx.vest.deploy;
 
+import me.bayes.vertx.vest.JaxrsRouteMatcherBuilder;
 import me.bayes.vertx.vest.RouteMatcherBuilder;
-import me.bayes.vertx.vest.jaxrs.JaxrsRouteMatcherBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

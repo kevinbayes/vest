@@ -1,12 +1,12 @@
 /**
  * 
  */
-package me.bayes.vertx.vest.jaxrs.deploy;
+package me.bayes.vertx.vest.deploy;
 
+import me.bayes.vertx.vest.AbstractVestVerticle;
+import me.bayes.vertx.vest.JaxrsRouteMatcherBuilder;
 import me.bayes.vertx.vest.RouteMatcherBuilder;
-import me.bayes.vertx.vest.jaxrs.AbstractVestVerticle;
-import me.bayes.vertx.vest.jaxrs.JaxrsRouteMatcherBuilder;
-import me.bayes.vertx.vest.jaxrs.VestApplication;
+import me.bayes.vertx.vest.VestApplication;
 
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
@@ -46,7 +46,7 @@ public class VestVerticle extends AbstractVestVerticle {
 			}
 		}
 		
-		application.addSingleton(container.getConfig());
+		application.addSingleton(container == null ? null : container.getConfig());
 		application.addSingleton(vertx);
 		application.addSingleton(container);
 		

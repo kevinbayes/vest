@@ -4,7 +4,6 @@
 package me.bayes.vertx.vest;
 
 
-import me.bayes.vertx.vest.jaxrs.VestApplication;
 
 import org.vertx.java.core.http.RouteMatcher;
 

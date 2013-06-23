@@ -1,17 +1,14 @@
-package me.bayes.vertx.vest.jaxrs.deploy;
+package me.bayes.vertx.vest.deploy;
 
 import java.net.URI;
 import java.util.Scanner;
 
 import me.bayes.vertx.vest.util.JsonUtil;
 
-import org.vertx.java.core.Vertx;
 import org.vertx.java.core.json.JsonObject;
 
 public class Standalone {
 
-	private static boolean running = true;
-	
 	/**
 	 * @param args
 	 * @throws Exception 
@@ -31,8 +28,7 @@ public class Standalone {
 		
 		final URI configUri = new URI(args[0]);
 		final JsonObject config = JsonUtil.readConfig(configUri);
-		final Embedded embedded = new Embedded();
-		final Vertx vertx = embedded.start(config);
+		new Embedded().start(config);
 		
 		startConsole();
 	}

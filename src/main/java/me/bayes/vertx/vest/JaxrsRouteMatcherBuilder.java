@@ -1,4 +1,4 @@
-package me.bayes.vertx.vest.jaxrs;
+package me.bayes.vertx.vest;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -17,8 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 
-import me.bayes.vertx.vest.AbstractRouteMatcherBuilder;
-import me.bayes.vertx.vest.RouteMatcherBuilder;
 import me.bayes.vertx.vest.util.ContextUtil;
 import me.bayes.vertx.vest.util.ParameterUtil;
 import me.bayes.vertx.vest.util.UriPathUtil;

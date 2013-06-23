@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.vest.jaxrs;
+package me.bayes.vertx.vest;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -17,7 +17,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
-import me.bayes.vertx.vest.jaxrs.deploy.RootContextVestApplication;
+import me.bayes.vertx.vest.deploy.RootContextVestApplication;
 
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;

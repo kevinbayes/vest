@@ -62,16 +62,14 @@ public class EntityHandler extends VertxAwareHandler {
 3. Use the JaxrsRoute
 ```java
 Vertx vertx = Vertx.newVertx();
-VertxApplication application = new VertxApplication();
-application.addPackagesToScan("me.bayes.base.entity.vertx.handlers");
+VestApplication application = new VertxApplication();
+application.addPackagesToScan("<package to scan>");
 
 HttpServer server = vertx.createHttpServer();
 
-BuilderContext context = new BuilderContext();
-context.addProperty(BuilderContextProperty.JAXRS_APPLICATION, application);
-context.addProperty(BuilderContextProperty.VERTX_INSTANCE, vertx);
-	
-RouteMatcherBuilder builder = new JaxrsRouteMatcherBuilder(context);
+application.addSingleton(vertx);
+
+RouteMatcherBuilder builder = new JaxrsRouteMatcherBuilder(application);
 server.requestHandler(builder.build());
 
 server.listen(18080);

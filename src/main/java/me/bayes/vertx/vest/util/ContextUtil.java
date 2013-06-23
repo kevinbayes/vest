@@ -10,7 +10,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Context;
 
-import me.bayes.vertx.vest.jaxrs.VestApplication;
+import me.bayes.vertx.vest.VestApplication;
 
 /**
  * A utility class used to work with the {@link Context} annotation.

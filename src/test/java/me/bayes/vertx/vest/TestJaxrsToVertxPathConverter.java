@@ -1,8 +1,8 @@
-package me.bayes.vertx.vest.jaxrs;
+package me.bayes.vertx.vest;
 
 import static org.junit.Assert.*;
 
-import me.bayes.vertx.vest.jaxrs.JaxrsToVertxPathConverter;
+import me.bayes.vertx.vest.JaxrsToVertxPathConverter;
 
 import org.junit.Test;
 

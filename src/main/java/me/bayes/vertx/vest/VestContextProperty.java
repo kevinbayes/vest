@@ -1,7 +1,7 @@
 /**
  * 
  */
-package me.bayes.vertx.vest.jaxrs;
+package me.bayes.vertx.vest;
 
 /**
  * All the properties that the context should contain.

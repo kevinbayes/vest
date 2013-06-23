@@ -1,11 +1,11 @@
 /**
  * 
  */
-package me.bayes.vertx.vest.jaxrs.deploy;
+package me.bayes.vertx.vest.deploy;
 
 import javax.ws.rs.ApplicationPath;
 
-import me.bayes.vertx.vest.jaxrs.VestApplication;
+import me.bayes.vertx.vest.VestApplication;
 
 /**
  * 

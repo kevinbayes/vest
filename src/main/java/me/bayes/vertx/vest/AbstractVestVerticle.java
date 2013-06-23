@@ -1,9 +1,8 @@
 /**
  * 
  */
-package me.bayes.vertx.vest.jaxrs;
+package me.bayes.vertx.vest;
 
-import me.bayes.vertx.vest.RouteMatcherBuilder;
 
 import org.vertx.java.core.http.HttpServer;
 import org.vertx.java.core.json.JsonObject;
