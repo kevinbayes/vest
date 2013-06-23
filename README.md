@@ -1,5 +1,5 @@
-vertx-route-ext aka 'vest'
-==========================
+Vest Framework
+==============
 
 Taking inspiration from the reference implementation of Jaxrs "Jersey", this implementation of Jaxrs for vertx is named "Vest".
 
