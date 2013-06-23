@@ -4,6 +4,8 @@
 package me.bayes.vertx.vest;
 
 
+import me.bayes.vertx.vest.jaxrs.VestApplication;
+
 import org.vertx.java.core.http.RouteMatcher;
 
 /**
@@ -11,26 +13,26 @@ import org.vertx.java.core.http.RouteMatcher;
  */
 public abstract class AbstractRouteMatcherBuilder implements RouteMatcherBuilder {
 
-	protected BuilderContext context;
+	protected VestApplication application;
 	protected RouteMatcher routeMatcher;
 
-	public AbstractRouteMatcherBuilder(BuilderContext context) {
+	public AbstractRouteMatcherBuilder(VestApplication application) {
 		super();
-		this.context = context;
+		this.application = application;
 		this.routeMatcher = new RouteMatcher();
 	}
 
-	public BuilderContext getContext() {
-		return context;
+	public VestApplication getApplication() {
+		return application;
 	}
 
-	public void setContext(BuilderContext context) {
-		this.context = context;
+	public void setApplication(VestApplication application) {
+		this.application = application;
 	}
 	
 	public RouteMatcher build() throws Exception {
 		
-		if(context == null) {
+		if(application == null) {
 			throw new Exception("No context available.");
 		}
 		

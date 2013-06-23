@@ -3,15 +3,9 @@
  */
 package me.bayes.vertx.vest.jaxrs;
 
-import javax.ws.rs.core.Application;
-
-import me.bayes.vertx.vest.AbstractRouteMatcherBuilder;
-import me.bayes.vertx.vest.BuilderContext;
 import me.bayes.vertx.vest.RouteMatcherBuilder;
 
 import org.vertx.java.core.http.HttpServer;
-import org.vertx.java.core.http.RouteMatcher;
-import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 import org.vertx.java.deploy.Verticle;
 
@@ -19,15 +13,8 @@ import org.vertx.java.deploy.Verticle;
  * @author kevinbayes
  *
  */
-public abstract class AbstractVestVerticle extends Verticle {
+public abstract class AbstractVestVerticle extends Verticle implements VestService {
 	
-	//Properties
-	private static final String LISTEN_HOST = "host";
-	private static final String LISTEN_PORT = "port";
-	
-	//Default values
-	private static final int DEFAULT_PORT = 8080;
-
 	/* (non-Javadoc)
 	 * @see org.vertx.java.deploy.Verticle#start()
 	 */
@@ -41,8 +28,17 @@ public abstract class AbstractVestVerticle extends Verticle {
 				(config.getInteger(LISTEN_PORT) == null) ? 
 						DEFAULT_PORT : config.getInteger(LISTEN_PORT);
 		
+		VestApplication application = createApplication(config);
+		application.addSingleton(container, vertx);
+		
+		//A hook to add to the VestApplication once it has been created.
+		postApplicationCreationProcess(application);
+		
 		final RouteMatcherBuilder routeBuilder = createBuilder(
-				createApplication(config));
+				application);
+		
+		postRouteMatcherBuilderCreationProcess(routeBuilder);
+		
 		server.requestHandler(
 				routeBuilder.build());
 		
@@ -54,25 +50,13 @@ public abstract class AbstractVestVerticle extends Verticle {
 		}
 	}
 	
-	/**
-	 * <pre>
-	 * Create an application for your jaxrs route builder.
-	 * </pre>
-	 * 
-	 * @param config
-	 * @return
-	 * @throws Exception
-	 */
-	protected abstract Application createApplication(final JsonObject config) throws Exception;
+	public void postRouteMatcherBuilderCreationProcess(RouteMatcherBuilder routeBuilder) { }
 
 	/**
-	 * <pre>
-	 * Create a route builder.
-	 * </pre>
+	 * Override this method to add post processing once the {@link VestApplication} has been created.
 	 * 
-	 * @return
-	 * @throws Exception
+	 * @param application that has just been created.
 	 */
-	protected abstract RouteMatcherBuilder createBuilder(final Application application) throws Exception;
+	public void postApplicationCreationProcess(final VestApplication application) { }
 	
 }

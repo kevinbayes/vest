@@ -6,10 +6,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import me.bayes.vertx.vest.jaxrs.VertxAwareHandler;
+
 import org.vertx.java.core.http.HttpServerRequest;
 
 @Path("/ping")
-public class PingEndpoint {
+public class PingEndpoint extends VertxAwareHandler {
 
 	@GET
 	@Produces({MediaType.TEXT_PLAIN})

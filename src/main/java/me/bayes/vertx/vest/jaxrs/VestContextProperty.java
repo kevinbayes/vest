@@ -10,7 +10,7 @@ package me.bayes.vertx.vest.jaxrs;
  * @version 1.0
  * @since 1.0
  */
-public interface BuilderContextProperty {
+public interface VestContextProperty {
 	
 	String JAXRS_APPLICATION = "jaxrs.application";
 	String VERTX_INSTANCE = "vertx.instance";

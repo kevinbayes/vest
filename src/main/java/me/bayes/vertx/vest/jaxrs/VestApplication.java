@@ -7,26 +7,35 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.tools.JavaFileObject;
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
+
+import me.bayes.vertx.vest.jaxrs.deploy.RootContextVestApplication;
 
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
 import org.vertx.java.deploy.impl.java.PackageHelper;
 
 /**
+ * <pre>
+ * An abstract implementation of a jaxrs {@link Application} for the Vest framework.
+ * 
+ * This class should be extended by any application using vest inorder to set the 
+ * {@link ApplicationPath} annotation for the starting context of your application.
+ * Example can be seen in the {@link RootContextVestApplication} where the {@link ApplicationPath}
+ * annotation is used to ensure that the rest service is located on '/'.
+ * </pre>
+ * 
  * @author Kevin Bayes
  * @since 1.0
  * @version 1.0
- * 
- * TODO: GET CLASSES
- * TODO: GET PROPERTIES
- * TODO: GET SINGLETONS
- * TODO: Package scanning of sub packages
  */
 public abstract class VestApplication extends Application {
 	
@@ -47,6 +56,35 @@ public abstract class VestApplication extends Application {
 	 * Used to specify the classes annotated with @Path.
 	 */
 	private final Set<Class<?>> endpointClasses = new HashSet<Class<?>>(0); 
+	
+	/*
+	 * Store all the singleton instances.
+	 */
+	private final Set<Object> singletons = new HashSet<Object>(0);
+	
+	/*
+	 * Map of shared properties
+	 */
+	private final Map<String, Object> properties = new HashMap<String, Object>(0);
+	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.ws.rs.core.Application#getClasses()
+	 */
+	@Override
+	public Set<Class<?>> getClasses() {
+		return endpointClasses;
+	}
+	
+	@Override
+	public Set<Object> getSingletons() {
+		return singletons;
+	}
+	
+	@Override
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
 	
 	
 	public Set<String> getPackagesToScan() {
@@ -92,11 +130,6 @@ public abstract class VestApplication extends Application {
 		}
 	}
 
-	@Override
-	public Set<Class<?>> getClasses() {
-		return endpointClasses;
-	}
-	
 	/*
 	 * Use vertx's built in PackageHelper to scan for classes in the classpath. Sub packages are left out for now.
 	 * 
@@ -143,5 +176,39 @@ public abstract class VestApplication extends Application {
 
 	}
 	
+	/**
+	 * TODO: WARN on same type insertions.
+	 * 
+	 * @param singleton
+	 */
+	public void addSingleton(Object... singleton) {
+		for(Object obj : singleton) {
+			
+			if(this.singletons.contains(obj)) {
+				LOG.warn("Object " + obj + " already exists.");
+			}
+			
+			this.singletons.add(obj);
+		}
+	}
+	
+	
+	/**
+	 * Add properties to the shared list.
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void addProperty(String key, Object value) {
+		if(this.properties.containsKey(key)) {
+			LOG.warn("Property " + key + " already exists.");
+		}
+		
+		this.properties.put(key, value);
+	}
+
+	public Application getPropertyValue(String key, Class<Application> clazz) {
+		return clazz.cast(properties.get(key));
+	}
 
 }

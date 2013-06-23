@@ -2,6 +2,8 @@ package me.bayes.vertx.vest;
 
 
 
+import me.bayes.vertx.vest.jaxrs.VestApplication;
+
 import org.vertx.java.core.http.RouteMatcher;
 
 /**
@@ -26,10 +28,10 @@ public interface RouteMatcherBuilder {
 	RouteMatcher build() throws Exception;
 	
 	/**
-	 * Set the context for building the route.
+	 * Set the application that the builder must use to build the jaxrs services.
 	 * 
-	 * @param context
+	 * @param application
 	 */
-	void setContext(BuilderContext context);
+	void setApplication(VestApplication application);
 	
 }

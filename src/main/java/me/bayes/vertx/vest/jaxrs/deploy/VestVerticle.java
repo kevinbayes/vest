@@ -3,13 +3,10 @@
  */
 package me.bayes.vertx.vest.jaxrs.deploy;
 
-import javax.ws.rs.core.Application;
-
-import me.bayes.vertx.vest.BuilderContext;
 import me.bayes.vertx.vest.RouteMatcherBuilder;
 import me.bayes.vertx.vest.jaxrs.AbstractVestVerticle;
-import me.bayes.vertx.vest.jaxrs.BuilderContextProperty;
 import me.bayes.vertx.vest.jaxrs.JaxrsRouteMatcherBuilder;
+import me.bayes.vertx.vest.jaxrs.VestApplication;
 
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
@@ -28,7 +25,7 @@ import org.vertx.java.core.json.JsonObject;
  */
 public class VestVerticle extends AbstractVestVerticle {
 
-	protected Application createApplication(final JsonObject config) throws Exception {
+	public VestApplication createApplication(final JsonObject config) throws Exception {
 		
 		final JsonArray vestPackagesToScan = config.getArray("vestPackagesToScan");
 		final JsonArray vestClasses = config.getArray("vestClasses");
@@ -49,21 +46,17 @@ public class VestVerticle extends AbstractVestVerticle {
 			}
 		}
 		
+		application.addSingleton(container.getConfig());
+		application.addSingleton(vertx);
+		application.addSingleton(container);
+		
 		return application;
 	}
 
 
-	@Override
-	protected RouteMatcherBuilder createBuilder(Application application)
+	public RouteMatcherBuilder createBuilder(VestApplication application)
 			throws Exception {
-		
-		final BuilderContext context = new BuilderContext();
-		context.addProperty(BuilderContextProperty.JAXRS_APPLICATION, application);
-		context.addProperty(BuilderContextProperty.JSON_CONFIG, container.getConfig());
-		context.addProperty(BuilderContextProperty.VERTX_INSTANCE, vertx);
-		context.addProperty(BuilderContextProperty.CONTAINER_INSTANCE, container);
-		
-		return new JaxrsRouteMatcherBuilder(context);
+		return new JaxrsRouteMatcherBuilder(application);
 	}
 
 }

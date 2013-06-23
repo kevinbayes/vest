@@ -4,14 +4,13 @@
 package me.bayes.vertx.vest.util;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.Context;
 
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.json.JsonObject;
-
-import me.bayes.vertx.vest.BuilderContext;
-import me.bayes.vertx.vest.jaxrs.BuilderContextProperty;
+import me.bayes.vertx.vest.jaxrs.VestApplication;
 
 /**
  * A utility class used to work with the {@link Context} annotation.
@@ -26,11 +25,7 @@ public final class ContextUtil {
 	
 	/**
 	 * This method goes through the class and all the super classes searching for fields annotated with {@link Context}.
-	 * It then injects the instance available in the context else null.
-	 * 
-	 * Currently this only supports injecting {@link Vertx} and {@link JsonObject}. 
-	 * 
-	 * TODO: Make this generic so anything in the context can be injected using the {@link Context} annotation.
+	 * It then injects the instance available in the context else null. 
 	 * 
 	 * @param clazz
 	 * @param instance
@@ -38,27 +33,20 @@ public final class ContextUtil {
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */
-	public static void assignContextFields(@SuppressWarnings("rawtypes") Class clazz, Object instance, BuilderContext context) throws IllegalArgumentException, IllegalAccessException {
+	public static void assignContextFields(@SuppressWarnings("rawtypes") Class clazz, Object instance, VestApplication application) throws IllegalArgumentException, IllegalAccessException {
 		
 		do {
 		
 			for(Field field : clazz.getDeclaredFields()) {
 				
 				if(field.getAnnotation(Context.class) != null) {
-					if(Vertx.class.equals(field.getType())) {
-						final Vertx vertx = context.getPropertyValue(BuilderContextProperty.VERTX_INSTANCE, Vertx.class);
-						if(vertx != null) {
-							boolean accessible = field.isAccessible();
-							field.setAccessible(true);
-							field.set(instance, vertx);
-							field.setAccessible(accessible);
-						}
-					} else if(JsonObject.class.equals(field.getType())) {
-						final JsonObject jsonObject = context.getPropertyValue(BuilderContextProperty.JSON_CONFIG, JsonObject.class);
-						if(jsonObject != null) {
-							field.setAccessible(true);
-							field.set(instance, jsonObject);
-						}
+					
+					final Object injectableObject = getInjectableObject(field.getType(), application.getSingletons());
+					if(injectableObject != null) {
+						boolean accessible = field.isAccessible();
+						field.setAccessible(true);
+						field.set(instance, injectableObject);
+						field.setAccessible(accessible);
 					}
 				}
 			}
@@ -67,6 +55,17 @@ public final class ContextUtil {
 		
 		} while(clazz != null && !Object.class.equals(clazz));
 		
+	}
+	
+	private static Object getInjectableObject(Class<?> type, Set<Object> objects) {
+
+		for(Object object : objects) {
+			if(type.isInstance(object)) {
+				return object;
+			}
+		}
+		
+		return null;
 	}
 	
 	

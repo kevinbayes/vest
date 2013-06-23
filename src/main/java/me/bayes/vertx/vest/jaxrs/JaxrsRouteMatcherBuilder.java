@@ -18,7 +18,6 @@ import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 
 import me.bayes.vertx.vest.AbstractRouteMatcherBuilder;
-import me.bayes.vertx.vest.BuilderContext;
 import me.bayes.vertx.vest.RouteMatcherBuilder;
 import me.bayes.vertx.vest.util.ContextUtil;
 import me.bayes.vertx.vest.util.ParameterUtil;
@@ -65,11 +64,11 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(JaxrsRouteMatcherBuilder.class);
 
 	/**
-	 * Requires a {@link BuilderContext}.
+	 * Requires a {@link VestContext}.
 	 * @param context
 	 */
-	public JaxrsRouteMatcherBuilder(final BuilderContext context) {
-		super(context);
+	public JaxrsRouteMatcherBuilder(final VestApplication application) {
+		super(application);
 	}
 	
 	/*
@@ -78,11 +77,9 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	 */
 	protected RouteMatcher buildInternal() throws Exception {
 		
-		final Application jaxrsApplication = context.getPropertyValue(BuilderContextProperty.JAXRS_APPLICATION, Application.class);
+		final Set<Class<?>> classes = application.getClasses();
 		
-		final Set<Class<?>> classes = jaxrsApplication.getClasses();
-		
-		final String applicationContextPath = UriPathUtil.getApplicationContext(jaxrsApplication);
+		final String applicationContextPath = UriPathUtil.getApplicationContext(application);
 		
 		//loop through classes and add then to the route matcher
 		for(Class<?> clazz : classes) {
@@ -106,6 +103,11 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			return;
 		}
 		
+		Object instance = clazz.getConstructor().newInstance();
+		
+		ContextUtil.assignContextFields(clazz, instance, application);
+		
+		
 		for(Method method : clazz.getMethods()) {
 			
 			if(!method.getReturnType().equals(Void.TYPE)) { 
@@ -116,6 +118,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			
 			addMethodRoutes(routeMatcher, 
 					clazz, 
+					instance,
 					UriPathUtil.concatPaths(contextPath, pathAnnotation.value()), 
 					method);
 		}
@@ -127,11 +130,12 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	 * 
 	 * @param routeMatcher
 	 * @param clazz
+	 * @param instance 
 	 * @param path
 	 * @param method
 	 * @throws Exception
 	 */
-	private void addMethodRoutes(final RouteMatcher routeMatcher, Class<?> clazz, String path, Method method) throws Exception {
+	private void addMethodRoutes(final RouteMatcher routeMatcher, Class<?> clazz, final Object instance, String path, Method method) throws Exception {
 		
 		final Path pathAnnotation = method.getAnnotation(Path.class);
 		final HttpMethod httpMethod = resolveHttpType(method);
@@ -145,7 +149,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			LOG.warn("Method {} is not public and is annotated with @Path.", method.getName());
 		}
 		
-		addRoute(routeMatcher, clazz, method, httpMethod, 
+		addRoute(routeMatcher, clazz, method, instance, httpMethod, 
 				UriPathUtil.concatPaths(path, 
 						(pathAnnotation == null) ? "" : pathAnnotation.value()));
 	}
@@ -179,7 +183,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	 * @param path
 	 * @throws Exception
 	 */
-	private void addRoute(final RouteMatcher routeMatcher, final Class<?> clazz, final Method method, final HttpMethod httpMethod, String path) throws Exception {
+	private void addRoute(final RouteMatcher routeMatcher, final Class<?> clazz, final Method method, final Object instance, final HttpMethod httpMethod, String path) throws Exception {
 
 		//3.7 Matching Requests to Resource Methods is delegated to vertx route matcher.
 		final Method routeMatcherMethod = RouteMatcher.class.getMethod(
@@ -204,9 +208,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			private final Object delegate;
 			
 			{
-				delegate = clazz.getConstructor().newInstance();
-				
-				ContextUtil.assignContextFields(clazz, delegate, context);
+				this.delegate = instance;
 			}
 			
 			public void handle(final HttpServerRequest request) {
@@ -235,5 +237,5 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 		});
 			
 	}
-	
+
 }
