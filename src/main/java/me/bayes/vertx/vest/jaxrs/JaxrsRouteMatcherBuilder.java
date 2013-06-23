@@ -134,9 +134,6 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	private void addMethodRoutes(final RouteMatcher routeMatcher, Class<?> clazz, String path, Method method) throws Exception {
 		
 		final Path pathAnnotation = method.getAnnotation(Path.class);
-		
-		path += (pathAnnotation == null) ? "" : pathAnnotation.value();
-		
 		final HttpMethod httpMethod = resolveHttpType(method);
 		
 		if(httpMethod == null) {
@@ -148,7 +145,9 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			LOG.warn("Method {} is not public and is annotated with @Path.", method.getName());
 		}
 		
-		addRoute(routeMatcher, clazz, method, httpMethod, path);
+		addRoute(routeMatcher, clazz, method, httpMethod, 
+				UriPathUtil.concatPaths(path, 
+						(pathAnnotation == null) ? "" : pathAnnotation.value()));
 	}
 	
 	
@@ -218,7 +217,7 @@ public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 						
 					for(int i = 1; i < parameters.length; i++) {
 						if(parameterAnnotations[i].length > 0) {
-							ParameterUtil.resolveParameter(parameterTypes[i], parameterAnnotations[i], request);
+							parameters[i] = ParameterUtil.resolveParameter(parameterTypes[i], parameterAnnotations[i], request);
 						}
 					}
 					
