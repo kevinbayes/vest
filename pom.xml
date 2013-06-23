@@ -6,6 +6,14 @@
   <name>Vest Framework</name>
   <description>Jaxrs extension for creating REST services with Vertx</description>
   
+  <licenses>
+  	<license>
+  		<name>Apache License 2.0</name>
+  		<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+  	</license>
+  </licenses>
+
+
   <scm>
   	<url>https://github.com/kevinbayes/vertx-route-ext</url>
   	<connection>https://github.com/kevinbayes/vertx-route-ext.git</connection>
