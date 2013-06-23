@@ -4,7 +4,7 @@
 package me.bayes.vertx.vest.deploy;
 
 import me.bayes.vertx.vest.AbstractVestVerticle;
-import me.bayes.vertx.vest.JaxrsRouteMatcherBuilder;
+import me.bayes.vertx.vest.DefaultRouteMatcherBuilder;
 import me.bayes.vertx.vest.RouteMatcherBuilder;
 import me.bayes.vertx.vest.VestApplication;
 
@@ -56,7 +56,7 @@ public class VestVerticle extends AbstractVestVerticle {
 
 	public RouteMatcherBuilder createBuilder(VestApplication application)
 			throws Exception {
-		return new JaxrsRouteMatcherBuilder(application);
+		return new DefaultRouteMatcherBuilder(application);
 	}
 
 }

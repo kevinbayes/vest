@@ -29,7 +29,7 @@ import org.vertx.java.core.http.RouteMatcher;
 
 /**
  * <pre>
- * The {@link JaxrsRouteMatcherBuilder} is a basic {@link RouteMatcherBuilder} that
+ * The {@link DefaultRouteMatcherBuilder} is a basic {@link RouteMatcherBuilder} that
  * uses the {@link Application} to get classes that are candidates for adding to
  * the {@link RouteMatcher}.
  * 
@@ -57,15 +57,15 @@ import org.vertx.java.core.http.RouteMatcher;
  * @version 1.0
  *
  */
-public class JaxrsRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
+public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(JaxrsRouteMatcherBuilder.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultRouteMatcherBuilder.class);
 
 	/**
 	 * Requires a {@link VestContext}.
 	 * @param context
 	 */
-	public JaxrsRouteMatcherBuilder(final VestApplication application) {
+	public DefaultRouteMatcherBuilder(final VestApplication application) {
 		super(application);
 	}
 	

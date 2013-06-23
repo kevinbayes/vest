@@ -9,12 +9,12 @@ Current Support
 ===============
 - @Path (without regular expressions)
 - @POST, @PUT, @GET, @DELETE, @OPTION and @HEAD
-- @Context limited support for vertx and jsonobject
-- Package scanning Application
-- Multisource scanning Application
+- @Context
+- Application implementation in the form of VestApplication.
 - @PathParam
-- @HeaderParam Extracts the value of a header.
-- @QueryParam Extracts the value of a URI query parameter.
+- @HeaderParam
+- @QueryParam 
+- @DefaultValue 
 
 TODO
 ====
@@ -23,12 +23,11 @@ Check issues
 Introduction
 ============
 The vestframework is an implementation of the JSR339 specification. It allows you to use the specification to develop Http REST services using vertx.
-The framework has the following 3 main components:
-- BuilderContext
+The framework has the following 2 main components:
 - RouteMatcherBuilder
 - VestApplication
 
-The BuilderContext provides the RouteMatcherBuilder context for building a RouteMatcher from classes using the jaxrs annotations. VestApplication is the abstract implementation of the jaxrs Application that is used by the builder to initialize the rest services.
+The VestApplication which is an abstract implementation of jaxrs Application that provides the RouteMatcherBuilder context for building a RouteMatcher from classes using the jaxrs annotations. 
 
 Quick start
 ===========
@@ -40,7 +39,7 @@ There are 3 steps to get up and running in the simplest case:
 1. Create an implementation of the VestApplication and annotate it with @ApplicationPath to set the context.
 ```java
 @ApplicationPath("/sample")
-public class VertxApplication extends me.bayes.vertx.vest.jaxrs.VestApplication {
+public class VertxApplication extends VestApplication {
 }
 
 ```

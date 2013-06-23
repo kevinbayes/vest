@@ -3,7 +3,7 @@
  */
 package me.bayes.vertx.vest.deploy;
 
-import me.bayes.vertx.vest.JaxrsRouteMatcherBuilder;
+import me.bayes.vertx.vest.DefaultRouteMatcherBuilder;
 import me.bayes.vertx.vest.RouteMatcherBuilder;
 
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class Embedded {
 		final JsonArray vestClasses = config.getArray("vestClasses");
 		final RootContextVestApplication application = new RootContextVestApplication();
 		final HttpServer server = vertx.createHttpServer();
-		final RouteMatcherBuilder builder = new JaxrsRouteMatcherBuilder(application);
+		final RouteMatcherBuilder builder = new DefaultRouteMatcherBuilder(application);
 		final String listenHost = config.getString(LISTEN_HOST);
 		final int listenPort = 
 				(config.getInteger(LISTEN_PORT) == null) ? 
