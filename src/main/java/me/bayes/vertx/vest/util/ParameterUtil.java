@@ -48,6 +48,7 @@ public final class ParameterUtil {
 	public static Object resolveParameter(final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request) {
 		
 		Object returnObject = null;
+		Object defaultValue = null;
 		
 		for(Annotation annotation : annotations) {
 			
@@ -64,8 +65,8 @@ public final class ParameterUtil {
 				HeaderParam pathParam = (HeaderParam) annotation;
 				returnObject = request.headers().get(pathParam.value());
 			} else if(annotation.annotationType().equals(DefaultValue.class)) {
-				DefaultValue defaultValue = (DefaultValue) annotation;
-				returnObject = defaultValue.value();
+				DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
+				defaultValue = defaultValueAnnotation.value();
 			} else if(annotation.annotationType().equals(MatrixParam.class) ||
 					annotation.annotationType().equals(CookieParam.class) ||
 					annotation.annotationType().equals(FormParam.class)) {
@@ -77,7 +78,7 @@ public final class ParameterUtil {
 			}
 		}
 		
-		return returnObject;
+		return returnObject == null ? defaultValue : returnObject;
 	}
 
 }
