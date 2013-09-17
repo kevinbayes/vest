@@ -31,16 +31,16 @@ public class PingEndpoint extends VertxAwareHandler {
 	@GET
 	@Produces({MediaType.TEXT_PLAIN})
 	public void ping(HttpServerRequest request) {
-		request.response.headers().put("Content-Type", String.format("%s; charset=%s", MediaType.TEXT_PLAIN, "UTF-8"));
-		request.response.end("ping");
+		request.response().headers().set("Content-Type", String.format("%s; charset=%s", MediaType.TEXT_PLAIN, "UTF-8"));
+		request.response().end("ping");
 	}
 
 	@GET
 	@Path("{string}")
 	@Produces({MediaType.TEXT_PLAIN})
 	public void echo(HttpServerRequest request, @PathParam("string") final String echoString) {
-		request.response.headers().put("Content-Type", String.format("%s; charset=%s", MediaType.TEXT_PLAIN, "UTF-8"));
-		request.response.end(String.format("echo: %s", echoString));
+		request.response().headers().set("Content-Type", String.format("%s; charset=%s", MediaType.TEXT_PLAIN, "UTF-8"));
+		request.response().end(String.format("echo: %s", echoString));
 	}
 	
 }

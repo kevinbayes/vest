@@ -16,9 +16,11 @@
 package me.bayes.vertx.vest;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.vertx.java.core.http.HttpServer;
 import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.deploy.Verticle;
+import org.vertx.java.platform.Verticle;
 
 /**
  * @author kevinbayes
@@ -26,18 +28,22 @@ import org.vertx.java.deploy.Verticle;
  */
 public abstract class AbstractVestVerticle extends Verticle implements VestService {
 	
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractVestVerticle.class);
+	
 	/* (non-Javadoc)
 	 * @see org.vertx.java.deploy.Verticle#start()
 	 */
 	@Override
-	public void start() throws Exception {
+	public void start() {
 		
-		final JsonObject config = container.getConfig();
+		final JsonObject config = container.config();
 		final HttpServer server = vertx.createHttpServer();
 		final String listenHost = config.getString(LISTEN_HOST);
 		final int listenPort = 
 				(config.getInteger(LISTEN_PORT) == null) ? 
 						DEFAULT_PORT : config.getInteger(LISTEN_PORT);
+		
+		try {
 		
 		VestApplication application = createApplication(config);
 		application.addSingleton(container, vertx);
@@ -58,6 +64,10 @@ public abstract class AbstractVestVerticle extends Verticle implements VestServi
 			server.listen(listenPort);
 		} else {
 			server.listen(listenPort, listenHost);
+		}
+		
+		} catch (Exception ex) {
+			LOG.error("Unable to start verticle due to exception.", ex);
 		}
 	}
 	

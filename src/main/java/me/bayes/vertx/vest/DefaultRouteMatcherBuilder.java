@@ -247,9 +247,9 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 					if(exceptionHandler != null) {
 						exceptionHandler.handle(request);
 					} else {
-						request.response.statusCode = 500;
-						request.response.statusMessage = "Internal server error";
-						request.response.end(e.getMessage());
+						request.response().setStatusCode(500);
+						request.response().setStatusMessage("Internal server error");
+						request.response().end(e.getMessage());
 					}
 				}
 			}

@@ -33,7 +33,7 @@ import me.bayes.vertx.vest.deploy.RootContextVestApplication;
 
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
-import org.vertx.java.deploy.impl.java.PackageHelper;
+import org.vertx.java.platform.impl.java.PackageHelper;
 
 /**
  * <pre>

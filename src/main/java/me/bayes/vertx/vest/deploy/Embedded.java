@@ -21,6 +21,7 @@ import me.bayes.vertx.vest.RouteMatcherBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Vertx;
+import org.vertx.java.core.VertxFactory;
 import org.vertx.java.core.http.HttpServer;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
@@ -41,7 +42,7 @@ public class Embedded {
 	
 	public Vertx start(final JsonObject config) throws Exception {
 		
-		final Vertx vertx = Vertx.newVertx();
+		final Vertx vertx = VertxFactory.newVertx();
 		final JsonArray vestPackagesToScan = config.getArray("vestPackagesToScan");
 		final JsonArray vestClasses = config.getArray("vestClasses");
 		final RootContextVestApplication application = new RootContextVestApplication();
