@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kevinbayes/vest.png?branch=master)](https://travis-ci.org/kevinbayes/vest)
+
 Vest Framework
 ==============
 
