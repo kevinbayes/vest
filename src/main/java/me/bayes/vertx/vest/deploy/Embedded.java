@@ -27,7 +27,7 @@ import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 
 /**
- * @author kevinbayes
+ * @author Kevin Bayes
  *
  */
 public class Embedded {

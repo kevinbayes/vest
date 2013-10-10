@@ -1,6 +1,10 @@
 package me.bayes.vertx.vest.endpoint;
 
 import static org.junit.Assert.*;
+
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
 import me.bayes.vertx.vest.deploy.VestVerticle;
 
 import org.junit.Test;
@@ -34,6 +38,9 @@ public class TestPingEndpoint extends TestVerticle {
 		
 		HttpClientRequest request = client.get("/ping/", new Handler<HttpClientResponse>() {
 		    public void handle(HttpClientResponse resp) {
+		    	
+		    	
+		    	
 		    	resp.bodyHandler(new Handler<Buffer>() {
 		            public void handle(Buffer body) {
 		               
@@ -42,13 +49,13 @@ public class TestPingEndpoint extends TestVerticle {
 		               VertxAssert.testComplete();
 		               
 		               assertTrue(payload.equals("ping"));
-		               
 		            }
 		        }); 
 		    	
-		    	
+		    	String contentType = resp.headers().get(HttpHeaders.CONTENT_TYPE);
+		    	assertTrue(MediaType.TEXT_PLAIN.equals(contentType));
 		    }
-		});
+		}).putHeader(HttpHeaders.ACCEPT, MediaType.TEXT_PLAIN);
 		
 		request.end();
 			

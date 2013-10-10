@@ -31,6 +31,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 import me.bayes.vertx.vest.util.ContextUtil;
 import me.bayes.vertx.vest.util.ParameterUtil;
@@ -65,6 +67,7 @@ import org.vertx.java.core.http.RouteMatcher;
  * TODO: Add default behaviour for HEAD and OPTIONS according to 3.3.5.
  * TODO: Handle exceptions better. 3.3.4 Exceptions
  * TODO: 3.8 Determining the MediaType of Responses
+ * TODO: Allow multiple endpoint implementation to have the same uri but different consumes and produces parameters.
  * </pre>
  * 
  * @author Kevin Bayes
@@ -229,6 +232,42 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			
 			public void handle(final HttpServerRequest request) {
 				try {
+					
+					String producesMediaType = MediaType.TEXT_PLAIN;
+					
+					if(!request.headers().isEmpty()) {
+						
+						String acceptsHeader = request.headers().get(HttpHeaders.ACCEPT);
+						String contentTypeHeader = request.headers().get(HttpHeaders.CONTENT_TYPE);
+						
+						//Test if we can accept the content type
+						if(acceptsHeader != null) {
+							if(produces != null && produces.value().length > 0) {
+								for(String type : produces.value()) {
+									if(acceptsHeader.contains(type)) {
+										producesMediaType = type;
+										break;
+									}
+								}
+							}
+						}
+						
+						//Test if we can produce the response content type.
+						if(contentTypeHeader != null) {
+							if(consumes != null && consumes.value().length > 0) {
+								for(String type : consumes.value()) {
+									if(acceptsHeader.contains(type)) {
+										contentTypeHeader = type;
+										break;
+									}
+								}
+							}
+						}
+					}
+					
+					//Set the response to the first in the list. 
+					//TODO: Add resolution at a later stage.
+					request.response().headers().set(HttpHeaders.CONTENT_TYPE, producesMediaType);
 					
 					final Object[] parameters = new Object[parameterTypes.length];
 					parameters[0] = request;

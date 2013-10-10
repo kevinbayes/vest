@@ -19,6 +19,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import me.bayes.vertx.vest.handler.VertxAwareHandler;
@@ -31,7 +32,7 @@ public class PingEndpoint extends VertxAwareHandler {
 	@GET
 	@Produces({MediaType.TEXT_PLAIN})
 	public void ping(HttpServerRequest request) {
-		request.response().headers().set("Content-Type", String.format("%s; charset=%s", MediaType.TEXT_PLAIN, "UTF-8"));
+		request.response().headers().set(HttpHeaders.CONTENT_ENCODING, "UTF-8");
 		request.response().end("ping");
 	}
 
@@ -39,7 +40,7 @@ public class PingEndpoint extends VertxAwareHandler {
 	@Path("{string}")
 	@Produces({MediaType.TEXT_PLAIN})
 	public void echo(HttpServerRequest request, @PathParam("string") final String echoString) {
-		request.response().headers().set("Content-Type", String.format("%s; charset=%s", MediaType.TEXT_PLAIN, "UTF-8"));
+		request.response().headers().set(HttpHeaders.CONTENT_ENCODING, "UTF-8");
 		request.response().end(String.format("echo: %s", echoString));
 	}
 	

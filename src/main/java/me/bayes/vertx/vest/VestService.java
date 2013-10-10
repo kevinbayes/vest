@@ -18,8 +18,9 @@ package me.bayes.vertx.vest;
 import org.vertx.java.core.json.JsonObject;
 
 /**
- * @author kevinbayes
- *
+ * 
+ * 
+ * @author Kevin Bayes
  */
 public interface VestService {
 	
