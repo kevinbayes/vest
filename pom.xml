@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.bayes</groupId>
   <artifactId>vest-framework</artifactId>
-  <version>0.1.5</version>
+  <version>0.1.7</version>
   <name>Vest Framework</name>
   <description>Jaxrs extension for creating REST services with Vertx</description>
   
