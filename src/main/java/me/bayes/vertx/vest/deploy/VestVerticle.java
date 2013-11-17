@@ -41,7 +41,8 @@ public class VestVerticle extends AbstractVestVerticle {
 		
 		final JsonArray vestPackagesToScan = config.getArray("vestPackagesToScan");
 		final JsonArray vestClasses = config.getArray("vestClasses");
-		final RootContextVestApplication application = new RootContextVestApplication();
+		final String applicationClass = config.getString("applicationClass", "me.bayes.vertx.vest.deploy.RootContextVestApplication");
+		final VestApplication application = (VestApplication) Class.forName(applicationClass).newInstance();
 		
 		//Add packages to scan
 		if(vestPackagesToScan != null) {

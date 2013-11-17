@@ -233,7 +233,7 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 			public void handle(final HttpServerRequest request) {
 				try {
 					
-					String producesMediaType = MediaType.TEXT_PLAIN;
+					String producesMediaType = null;
 					
 					if(!request.headers().isEmpty()) {
 						
@@ -251,6 +251,12 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 								}
 							}
 						}
+						
+						if(producesMediaType == null) {
+							producesMediaType = 
+									(produces != null && produces.value() != null && produces.value().length == 1) ? 
+											produces.value()[0] : MediaType.TEXT_PLAIN;
+						} 
 						
 						//Test if we can produce the response content type.
 						if(contentTypeHeader != null) {
