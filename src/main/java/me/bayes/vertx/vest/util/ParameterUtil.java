@@ -28,6 +28,7 @@ import javax.ws.rs.QueryParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.http.HttpServerResponse;
 
 /**
  * <pre>
@@ -62,31 +63,35 @@ public final class ParameterUtil {
 		Object returnObject = null;
 		Object defaultValue = null;
 		
-		for(Annotation annotation : annotations) {
-			
-			if(annotation.annotationType().equals(PathParam.class)) {
-				//Path Parameters
-				PathParam pathParam = (PathParam) annotation;
-				returnObject = request.params().get(pathParam.value());
-			} else if(annotation.annotationType().equals(HeaderParam.class)) {
-				//Query Parameters
-				QueryParam queryParam = (QueryParam) annotation;
-				returnObject = request.params().get(queryParam.value());
-			} else if(annotation.annotationType().equals(HeaderParam.class)) {
-				//HTTP Headers
-				HeaderParam pathParam = (HeaderParam) annotation;
-				returnObject = request.headers().get(pathParam.value());
-			} else if(annotation.annotationType().equals(DefaultValue.class)) {
-				DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
-				defaultValue = defaultValueAnnotation.value();
-			} else if(annotation.annotationType().equals(MatrixParam.class) ||
+		if(parameterType.equals(HttpServerResponse.class)) {
+			returnObject = request.response();
+		} else {
+			for(Annotation annotation : annotations) {
+				
+				if(annotation.annotationType().equals(PathParam.class)) {
+					//Path Parameters
+					PathParam pathParam = (PathParam) annotation;
+					returnObject = request.params().get(pathParam.value());
+				} else if(annotation.annotationType().equals(HeaderParam.class)) {
+					//Query Parameters
+					QueryParam queryParam = (QueryParam) annotation;
+					returnObject = request.params().get(queryParam.value());
+				} else if(annotation.annotationType().equals(HeaderParam.class)) {
+					//HTTP Headers
+					HeaderParam pathParam = (HeaderParam) annotation;
+					returnObject = request.headers().get(pathParam.value());
+				} else if(annotation.annotationType().equals(DefaultValue.class)) {
+					DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
+					defaultValue = defaultValueAnnotation.value();
+				} else if(annotation.annotationType().equals(MatrixParam.class) ||
 					annotation.annotationType().equals(CookieParam.class) ||
 					annotation.annotationType().equals(FormParam.class)) {
-				LOG.warn("Matrix & cookie && form parameters are not supported.");
-			}
-			
-			if(returnObject != null) {
-				break;
+					LOG.warn("Matrix & cookie && form parameters are not supported.");
+				}
+				
+				if(returnObject != null) {
+					break;
+				}
 			}
 		}
 		

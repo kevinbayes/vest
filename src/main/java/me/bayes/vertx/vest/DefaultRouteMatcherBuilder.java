@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.http.HttpServerResponse;
 import org.vertx.java.core.http.RouteMatcher;
 
 /**
@@ -279,7 +280,7 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 					parameters[0] = request;
 						
 					for(int i = 1; i < parameters.length; i++) {
-						if(parameterAnnotations[i].length > 0) {
+						if(parameterAnnotations[i].length > 0 || HttpServerResponse.class.equals(parameterTypes[i])) {
 							parameters[i] = ParameterUtil.resolveParameter(parameterTypes[i], parameterAnnotations[i], request);
 						}
 					}

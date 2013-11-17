@@ -25,15 +25,16 @@ import javax.ws.rs.core.MediaType;
 import me.bayes.vertx.vest.handler.VertxAwareHandler;
 
 import org.vertx.java.core.http.HttpServerRequest;
+import org.vertx.java.core.http.HttpServerResponse;
 
 @Path("/ping")
 public class PingEndpoint extends VertxAwareHandler {
 
 	@GET
 	@Produces({MediaType.TEXT_PLAIN})
-	public void ping(HttpServerRequest request) {
-		request.response().headers().set(HttpHeaders.CONTENT_ENCODING, "UTF-8");
-		request.response().end("ping");
+	public void ping(HttpServerRequest request, HttpServerResponse response) {
+		response.headers().set(HttpHeaders.CONTENT_ENCODING, "UTF-8");
+		response.end("ping");
 	}
 
 	@GET

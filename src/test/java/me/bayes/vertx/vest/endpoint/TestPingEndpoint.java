@@ -36,7 +36,7 @@ public class TestPingEndpoint extends TestVerticle {
 		client.setHost("localhost");
 		client.setPort(8080);
 		
-		HttpClientRequest request = client.get("/ping/", new Handler<HttpClientResponse>() {
+		HttpClientRequest request = client.get("/ping", new Handler<HttpClientResponse>() {
 		    public void handle(HttpClientResponse resp) {
 		    	
 		    	
