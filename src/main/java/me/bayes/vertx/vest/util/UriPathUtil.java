@@ -105,6 +105,8 @@ public final class UriPathUtil {
 			} else if(foundPathVariable && (foundRegularExpression ||
 					currentCharacter == ' ')) {
 				continue;
+			} else if(i == path.length() && currentCharacter != '/') {
+				continue;
 			} else {
 				newPath.append(currentCharacter);
 			}
