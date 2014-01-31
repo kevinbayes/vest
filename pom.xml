@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.bayes</groupId>
   <artifactId>vest-framework</artifactId>
-  <version>0.1.8</version>
+  <version>0.1.9</version>
   <name>Vest Framework</name>
   <description>Jaxrs extension for creating REST services with Vertx</description>
   
@@ -32,8 +32,8 @@
   </developers>
   
   <properties>
-  	<vertx.version>2.0.2-final</vertx.version>
-  	<vertx.test.version>2.0.0-final</vertx.test.version>
+  	<vertx.version>2.1M3</vertx.version>
+  	<vertx.test.version>2.0.3-final</vertx.test.version>
   	<jaxrs.version>2.0-rc3</jaxrs.version>
   	<junit.version>4.11</junit.version>
   </properties>
@@ -56,15 +56,8 @@
   	
 	<dependency>
 	    <groupId>io.vertx</groupId>
-    	<artifactId>vertx-testsuite</artifactId>
-	    <version>${vertx.test.version}</version>
-	    <scope>test</scope>
-	</dependency>
-	
-	<dependency>
-	    <groupId>io.vertx</groupId>
     	<artifactId>testtools</artifactId>
-	    <version>${vertx.version}</version>
+	    <version>${vertx.test.version}</version>
 	    <scope>test</scope>
 	</dependency>
 
