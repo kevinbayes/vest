@@ -16,6 +16,7 @@
 package me.bayes.vertx.vest.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -25,10 +26,13 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import me.bayes.vertx.vest.VestApplication;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.HttpServerResponse;
+import org.vertx.java.core.json.JsonObject;
 
 /**
  * <pre>
@@ -42,11 +46,15 @@ import org.vertx.java.core.http.HttpServerResponse;
  * @since 1.0
  * @version 1.0
  */
-public final class ParameterUtil {
+public final class DefaultParameterResolver implements ParameterResolver {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(ParameterUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultParameterResolver.class);
 	
-	private ParameterUtil() { }
+	private final VestApplication application;
+	
+	public DefaultParameterResolver(VestApplication application) { 
+		this.application = application;
+	}
 	
 	/**
 	 * <pre>
@@ -58,44 +66,14 @@ public final class ParameterUtil {
 	 * @param request from vertx
 	 * @return object to populate
 	 */
-	public static Object resolveParameter(final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request) {
-		
-		Object returnObject = null;
-		Object defaultValue = null;
+	public Object resolve(final Method method, final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request) {
 		
 		if(parameterType.equals(HttpServerResponse.class)) {
-			returnObject = request.response();
+			return new HttpServerResponseParameterHandler().handle(method, parameterType, annotations, request);
 		} else {
-			for(Annotation annotation : annotations) {
-				
-				if(annotation.annotationType().equals(PathParam.class)) {
-					//Path Parameters
-					PathParam pathParam = (PathParam) annotation;
-					returnObject = request.params().get(pathParam.value());
-				} else if(annotation.annotationType().equals(HeaderParam.class)) {
-					//Query Parameters
-					QueryParam queryParam = (QueryParam) annotation;
-					returnObject = request.params().get(queryParam.value());
-				} else if(annotation.annotationType().equals(HeaderParam.class)) {
-					//HTTP Headers
-					HeaderParam pathParam = (HeaderParam) annotation;
-					returnObject = request.headers().get(pathParam.value());
-				} else if(annotation.annotationType().equals(DefaultValue.class)) {
-					DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
-					defaultValue = defaultValueAnnotation.value();
-				} else if(annotation.annotationType().equals(MatrixParam.class) ||
-					annotation.annotationType().equals(CookieParam.class) ||
-					annotation.annotationType().equals(FormParam.class)) {
-					LOG.warn("Matrix & cookie && form parameters are not supported.");
-				}
-				
-				if(returnObject != null) {
-					break;
-				}
-			}
+			return new JaxrsAnnotationParamterHandler().handle(method, parameterType, annotations, request);
 		}
 		
-		return returnObject == null ? defaultValue : returnObject;
 	}
-
+	
 }

@@ -16,6 +16,7 @@
 package me.bayes.vertx.vest;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -35,15 +36,18 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import me.bayes.vertx.vest.util.ContextUtil;
-import me.bayes.vertx.vest.util.ParameterUtil;
+import me.bayes.vertx.vest.util.DefaultParameterResolver;
+import me.bayes.vertx.vest.util.ParameterResolver;
 import me.bayes.vertx.vest.util.UriPathUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.buffer.Buffer;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.HttpServerResponse;
 import org.vertx.java.core.http.RouteMatcher;
+import org.vertx.java.core.json.JsonObject;
 
 /**
  * <pre>
@@ -79,6 +83,8 @@ import org.vertx.java.core.http.RouteMatcher;
 public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultRouteMatcherBuilder.class);
+	
+	private final ParameterResolver parameterResolver;
 
 	/**
 	 * Requires a {@link VestContext}.
@@ -86,6 +92,7 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	 */
 	public DefaultRouteMatcherBuilder(final VestApplication application) {
 		super(application);
+		this.parameterResolver = new DefaultParameterResolver(application);
 	}
 	
 	/*
@@ -278,14 +285,29 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 					
 					final Object[] parameters = new Object[parameterTypes.length];
 					parameters[0] = request;
-						
-					for(int i = 1; i < parameters.length; i++) {
-						if(parameterAnnotations[i].length > 0 || HttpServerResponse.class.equals(parameterTypes[i])) {
-							parameters[i] = ParameterUtil.resolveParameter(parameterTypes[i], parameterAnnotations[i], request);
+
+					boolean isBodyResolved = false;
+					int objectParameterIndex = -1;
+					
+					if(parameters.length > 1) {
+						for(int i = 1; i < parameters.length; i++) {
+							if(parameterAnnotations[i].length > 0 || 
+									HttpServerResponse.class.equals(parameterTypes[i])) {
+								
+								parameters[i] = parameterResolver.resolve(method, parameterTypes[i], parameterAnnotations[i], request);
+								
+							} else if(JsonObject.class.equals(parameterTypes[i])) {
+								objectParameterIndex  = i;
+								isBodyResolved = true;
+							}
 						}
 					}
 					
-					method.invoke(delegate, parameters);
+					if(isBodyResolved) {
+						resolvedBodyDelegate(request, objectParameterIndex, method, parameters);
+					} else {
+						delegate(method, parameters);
+					}
 						
 				} catch (Exception e) {
 					LOG.error("Exception occurred.", e);
@@ -295,10 +317,50 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 					} else {
 						request.response().setStatusCode(500);
 						request.response().setStatusMessage("Internal server error");
-						request.response().end(e.getMessage());
+						request.response().end();
 					}
 				}
 			}
+			
+			private void resolvedBodyDelegate(final HttpServerRequest request, final int objectParameterIndex, final Method method, final Object[] parameters) {
+				
+				final Buffer buffer = new Buffer();
+				
+				request.dataHandler(new Handler<Buffer>() {
+
+					@Override
+					public void handle(Buffer internalBuffer) {
+						buffer.appendBuffer(internalBuffer);
+					}
+					
+				});
+				
+				request.endHandler(new Handler<Void>() {
+
+					@Override
+					public void handle(Void event) {
+						parameters[objectParameterIndex] = new JsonObject(buffer.toString());
+						try {
+							method.invoke(delegate, parameters);
+						} catch (Exception e) {
+							LOG.error("Exception occurred.", e);
+							
+							if(exceptionHandler != null) {
+								exceptionHandler.handle(request);
+							} else {
+								request.response().setStatusCode(500);
+								request.response().setStatusMessage("Internal server error");
+								request.response().end();
+							}
+						}
+					}
+				});
+			}
+			
+			private void delegate(Method method, Object[] parameters) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+				method.invoke(delegate, parameters);
+			}
+			
 		});
 			
 	}
