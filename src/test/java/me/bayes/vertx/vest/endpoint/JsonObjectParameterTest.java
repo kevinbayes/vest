@@ -18,6 +18,7 @@ import org.vertx.java.core.json.JsonObject;
 import org.vertx.testtools.TestVerticle;
 import org.vertx.testtools.VertxAssert;
 
+@Ignore
 public class JsonObjectParameterTest extends TestVerticle {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JsonObjectParameterTest.class);

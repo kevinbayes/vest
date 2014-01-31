@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 
 import me.bayes.vertx.vest.deploy.VestVerticle;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.vertx.java.core.json.JsonObject;
 import org.vertx.testtools.TestVerticle;
 import org.vertx.testtools.VertxAssert;
 
+@Ignore
 public class TestPingEndpoint extends TestVerticle {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TestPingEndpoint.class);
