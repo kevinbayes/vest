@@ -17,6 +17,7 @@ Current Support
 - @HeaderParam
 - @QueryParam 
 - @DefaultValue 
+- JsonObject as a parameter in a handler
 
 TODO
 ====
