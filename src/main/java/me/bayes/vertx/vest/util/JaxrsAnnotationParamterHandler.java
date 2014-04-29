@@ -47,7 +47,7 @@ public class JaxrsAnnotationParamterHandler implements ParameterHandler<Object> 
 				//Path Parameters
 				PathParam pathParam = (PathParam) annotation;
 				returnObject = request.params().get(pathParam.value());
-			} else if(annotation.annotationType().equals(HeaderParam.class)) {
+			} else if(annotation.annotationType().equals(QueryParam.class)) {
 				//Query Parameters
 				QueryParam queryParam = (QueryParam) annotation;
 				returnObject = request.params().get(queryParam.value());
