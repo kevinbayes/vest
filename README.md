@@ -18,6 +18,8 @@ Current Support
 - @QueryParam 
 - @DefaultValue 
 - JsonObject as a parameter in a handler
+- @Consumes (Alpha)
+- @Produces (Alpha)
 
 TODO
 ====
