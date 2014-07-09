@@ -23,9 +23,9 @@ public class EchoEndpoint {
 	
 	@GET
 	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({MediaType.APPLICATION_JSON})
 	public void ping(HttpServerRequest request, HttpServerResponse response, JsonObject body) {
 		response.headers().set(HttpHeaders.CONTENT_ENCODING, "UTF-8");
-		response.headers().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 		response.end(body.toString());
 	}
 

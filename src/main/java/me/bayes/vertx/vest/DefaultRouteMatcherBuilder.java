@@ -315,6 +315,7 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 					if(exceptionHandler != null) {
 						exceptionHandler.handle(request);
 					} else {
+						request.response().headers().set(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
 						request.response().setStatusCode(500);
 						request.response().setStatusMessage("Internal server error");
 						request.response().end();

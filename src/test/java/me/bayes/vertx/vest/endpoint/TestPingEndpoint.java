@@ -41,8 +41,6 @@ public class TestPingEndpoint extends TestVerticle {
 		HttpClientRequest request = client.get("/ping", new Handler<HttpClientResponse>() {
 		    public void handle(HttpClientResponse resp) {
 		    	
-		    	
-		    	
 		    	resp.bodyHandler(new Handler<Buffer>() {
 		            public void handle(Buffer body) {
 		               
