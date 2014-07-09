@@ -18,7 +18,6 @@ import org.vertx.java.core.json.JsonObject;
 import org.vertx.testtools.TestVerticle;
 import org.vertx.testtools.VertxAssert;
 
-@Ignore
 public class JsonObjectParameterTest extends TestVerticle {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(JsonObjectParameterTest.class);
@@ -41,7 +40,6 @@ public class JsonObjectParameterTest extends TestVerticle {
 		
 		client.get("/echo", new Handler<HttpClientResponse>() {
 		    public void handle(HttpClientResponse resp) {
-		    	
 		    	
 		    	resp.bodyHandler(new Handler<Buffer>() {
 		            public void handle(Buffer body) {

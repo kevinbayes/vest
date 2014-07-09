@@ -18,13 +18,12 @@ package me.bayes.vertx.vest;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Set;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
-import javax.ws.rs.HttpMethod;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -35,7 +34,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import me.bayes.vertx.vest.util.ContextUtil;
+import me.bayes.vertx.vest.binding.DefaultRouteBindingHolderFactory;
+import me.bayes.vertx.vest.binding.Function;
+import me.bayes.vertx.vest.binding.RouteBindingHolder.MethodBinding;
 import me.bayes.vertx.vest.util.DefaultParameterResolver;
 import me.bayes.vertx.vest.util.ParameterResolver;
 import me.bayes.vertx.vest.util.UriPathUtil;
@@ -85,285 +86,223 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultRouteMatcherBuilder.class);
 	
 	private final ParameterResolver parameterResolver;
-
+	
 	/**
 	 * Requires a {@link VestContext}.
 	 * @param context
 	 */
 	public DefaultRouteMatcherBuilder(final VestApplication application) {
-		super(application);
+		super(application, new DefaultRouteBindingHolderFactory(application));
 		this.parameterResolver = new DefaultParameterResolver(application);
 	}
+
 	
 	/*
 	 * (non-Javadoc)
 	 * @see me.bayes.vertx.extension.RouteMatcherBuilder#build(me.bayes.vertx.extension.BuilderContext)
 	 */
 	protected RouteMatcher buildInternal() throws Exception {
-		
-		final Set<Class<?>> classes = application.getClasses();
-		
-		final String applicationContextPath = UriPathUtil.getApplicationContext(application);
+
+		addRoutes(routeMatcher);
 		
 		//loop through classes and add then to the route matcher
-		for(Class<?> clazz : classes) {
-			addClassRoutes(routeMatcher, clazz, applicationContextPath);
-		}
+		
+		//TODO: Iterate over holder and add routes.
+//		for(Class<?> clazz : classes) {
+//			addRoutes(routeMatcher, clazz, applicationContextPath);
+//		}
 		
 		return routeMatcher;
 	}
-	
-	/**
-	 * 
-	 * @param routeMatcher
-	 * @param clazz
-	 * @throws Exception
-	 */
-	private void addClassRoutes(final RouteMatcher routeMatcher, final Class<?> clazz, String contextPath) throws Exception {
-		
-		final Path pathAnnotation = clazz.getAnnotation(Path.class);
-		
-		if(pathAnnotation == null) {
-			return;
-		}
-		
-		Object instance = clazz.getConstructor().newInstance();
-		
-		ContextUtil.assignContextFields(clazz, instance, application);
-		
-		
-		for(Method method : clazz.getMethods()) {
-			
-			if(!method.getReturnType().equals(Void.TYPE)) { 
-				//Carry on if return type is not void as we are interested in async.
-				//3.3.3	Return Type
-				continue;
-			}
-			
-			addMethodRoutes(routeMatcher, 
-					clazz, 
-					instance,
-					UriPathUtil.concatPaths(contextPath, pathAnnotation.value()), 
-					method);
-		}
-		
-	}
-	
-	
-	/**
-	 * 
-	 * @param routeMatcher
-	 * @param clazz
-	 * @param instance 
-	 * @param path
-	 * @param method
-	 * @throws Exception
-	 */
-	private void addMethodRoutes(final RouteMatcher routeMatcher, Class<?> clazz, final Object instance, String path, Method method) throws Exception {
-		
-		final Path pathAnnotation = method.getAnnotation(Path.class);
-		final HttpMethod httpMethod = resolveHttpType(method);
-		
-		if(httpMethod == null) {
-			return;
-		}
-		
-		//3.3.1	Visibility Only public methods may be exposed as resource methods.
-		if(method.getModifiers() != Method.PUBLIC) {
-			LOG.warn("Method {} is not public and is annotated with @Path.", method.getName());
-		}
-		
-		addRoute(routeMatcher, clazz, method, instance, httpMethod, 
-				UriPathUtil.concatPaths(path, 
-						(pathAnnotation == null) ? "" : pathAnnotation.value()));
-	}
-	
-	
-	/**
-	 * Look for the HTTP verb which should be {@link GET}, {@link POST}, {@link PUT}, {@link DELETE}, {@link OPTIONS} or {@link HEAD}.
-	 * 
-	 * @param method - that potentially has an annotation.
-	 * @return {@link HttpMethod} or null.
-	 */
-	private HttpMethod resolveHttpType(Method method) {
-		for(Annotation annotation : method.getDeclaredAnnotations()) {
-			final HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
-			if(httpMethod != null) {
-				return httpMethod;
-			}
-		}
-		return null;
-	}
-	
-	
-	
 	/**
 	 * The simplest case adds routes and delegates the execution to the method annotated with the {@link Path} annotation. 
 	 * 
 	 * @param routeMatcher
-	 * @param clazz
-	 * @param method
-	 * @param httpMethod
-	 * @param path
 	 * @throws Exception
 	 */
-	private void addRoute(final RouteMatcher routeMatcher, final Class<?> clazz, final Method method, final Object instance, final HttpMethod httpMethod, String path) throws Exception {
-
-		final Produces produces = method.getAnnotation(Produces.class);
-		final Consumes consumes = method.getAnnotation(Consumes.class);
-		
-		//3.7 Matching Requests to Resource Methods is delegated to vertx route matcher.
-		final Method routeMatcherMethod = RouteMatcher.class.getMethod(
-				httpMethod.value().toLowerCase(), 
-				String.class,
-				Handler.class);
-
-		//If the method does not have the right signature then just warn the user and return.
-		final Class<?>[] parameterTypes = method.getParameterTypes();
-		if(parameterTypes.length == 0 || !parameterTypes[0].equals(HttpServerRequest.class)) {
-			LOG.warn("Classes marked with a HttpMethod must have at least one parameter. The first parameter should be HttpServerRequest.");
-			return;
-		}
-		
-		final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-		
-		final String finalPath = UriPathUtil.convertPath(path);
-		
-		routeMatcherMethod.invoke(routeMatcher, finalPath,
-				new Handler<HttpServerRequest>() {
-		
-			private final Object delegate;
-			
-			{
-				this.delegate = instance;
-			}
-			
-			public void handle(final HttpServerRequest request) {
-				try {
-					
-					String producesMediaType = null;
-					
-					if(!request.headers().isEmpty()) {
-						
-						String acceptsHeader = request.headers().get(HttpHeaders.ACCEPT);
-						String contentTypeHeader = request.headers().get(HttpHeaders.CONTENT_TYPE);
-						
-						//Test if we can accept the content type
-						if(acceptsHeader != null) {
-							if(produces != null && produces.value().length > 0) {
-								for(String type : produces.value()) {
-									if(acceptsHeader.contains(type)) {
-										producesMediaType = type;
-										break;
-									}
-								}
-							}
-						}
-						
-						if(producesMediaType == null) {
-							producesMediaType = 
-									(produces != null && produces.value() != null && produces.value().length == 1) ? 
-											produces.value()[0] : MediaType.TEXT_PLAIN;
-						} 
-						
-						//Test if we can produce the response content type.
-						if(contentTypeHeader != null) {
-							if(consumes != null && consumes.value().length > 0) {
-								for(String type : consumes.value()) {
-									if(acceptsHeader.contains(type)) {
-										contentTypeHeader = type;
-										break;
-									}
-								}
-							}
-						}
-					}
-					
-					//Set the response to the first in the list. 
-					//TODO: Add resolution at a later stage.
-					request.response().headers().set(HttpHeaders.CONTENT_TYPE, producesMediaType);
-					
-					final Object[] parameters = new Object[parameterTypes.length];
-					parameters[0] = request;
-
-					boolean isBodyResolved = false;
-					int objectParameterIndex = -1;
-					
-					if(parameters.length > 1) {
-						for(int i = 1; i < parameters.length; i++) {
-							if(parameterAnnotations[i].length > 0 || 
-									HttpServerResponse.class.equals(parameterTypes[i])) {
-								
-								parameters[i] = parameterResolver.resolve(method, parameterTypes[i], parameterAnnotations[i], request);
-								
-							} else if(JsonObject.class.equals(parameterTypes[i])) {
-								objectParameterIndex  = i;
-								isBodyResolved = true;
-							}
-						}
-					}
-					
-					if(isBodyResolved) {
-						resolvedBodyDelegate(request, objectParameterIndex, method, parameters);
-					} else {
-						delegate(method, parameters);
-					}
-						
-				} catch (Exception e) {
-					LOG.error("Exception occurred.", e);
-					
-					if(exceptionHandler != null) {
-						exceptionHandler.handle(request);
-					} else {
-						request.response().headers().set(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
-						request.response().setStatusCode(500);
-						request.response().setStatusMessage("Internal server error");
-						request.response().end();
-					}
-				}
-			}
-			
-			private void resolvedBodyDelegate(final HttpServerRequest request, final int objectParameterIndex, final Method method, final Object[] parameters) {
+	private void addRoutes(final RouteMatcher routeMatcher) throws Exception {
+		this.bindingHolder.foreach(new Function() {
+			public void apply(final String method, final String key, final List<MethodBinding> bindings) throws Exception {
 				
-				final Buffer buffer = new Buffer();
+				//3.7 Matching Requests to Resource Methods is delegated to vertx route matcher.
+				final Method routeMatcherMethod = RouteMatcher.class.getMethod(
+							method.toLowerCase(), 
+							String.class,
+							Handler.class);
 				
-				request.dataHandler(new Handler<Buffer>() {
-
-					@Override
-					public void handle(Buffer internalBuffer) {
-						buffer.appendBuffer(internalBuffer);
+				final String finalPath = UriPathUtil.convertPath(key);
+				
+				routeMatcherMethod.invoke(routeMatcher, finalPath,
+						new Handler<HttpServerRequest>() {
+					
+					private List<MethodBinding> delegates;
+					
+					{
+						delegates = bindings;
 					}
 					
-				});
-				
-				request.endHandler(new Handler<Void>() {
-
-					@Override
-					public void handle(Void event) {
-						parameters[objectParameterIndex] = new JsonObject(buffer.toString());
+					public void handle(HttpServerRequest request) {
+						
 						try {
-							method.invoke(delegate, parameters);
+						
+							MethodBinding binding = null;
+							Method method = null;
+							
+							String acceptsHeader = request.headers().get(HttpHeaders.ACCEPT);
+							String contentTypeHeader = request.headers().get(HttpHeaders.CONTENT_TYPE);
+							
+							if(!request.headers().isEmpty()) {
+								for(MethodBinding binding_ : bindings) {
+									if(binding_.hasConsumes(contentTypeHeader) && binding_.hasProduces(acceptsHeader)) {
+										binding = binding_;
+										break;
+									}
+									if(binding_.hasConsumes(contentTypeHeader) && acceptsHeader == null) {
+										binding = binding_;
+										break;
+									}
+									if(contentTypeHeader == null && binding_.hasProduces(acceptsHeader)) {
+										binding = binding_;
+										break;
+									}
+								}
+								
+							}
+								
+							if(binding == null && delegates.size() > 0) {
+								binding = delegates.get(0);
+							} else if(binding == null){
+								throw new Exception("No route that supports accepts given HTTP parameters");
+							}
+							
+							method = binding.getMethod();
+							
+							final Class<?>[] parameterTypes = method.getParameterTypes();
+							if(parameterTypes.length == 0 || !parameterTypes[0].equals(HttpServerRequest.class)) {
+								LOG.warn("Classes marked with a HttpMethod must have at least one parameter. The first parameter should be HttpServerRequest.");
+								return;
+							}
+							
+							final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+							final String[] produces = binding.getProduces();
+							final String[] consumes = binding.getConsumes();
+							String producesMediaType = null;
+							
+							if(acceptsHeader != null) {
+								if(produces != null && produces.length > 0) {
+									for(String type : produces) {
+										if(acceptsHeader.contains(type)) {
+											producesMediaType = type;
+											break;
+										}
+									}
+								}
+							}
+							
+							if(producesMediaType == null) {
+								producesMediaType = 
+										(produces != null && produces.length == 1) ? 
+												produces[0] : MediaType.TEXT_PLAIN;
+							} 
+							
+							if(contentTypeHeader != null) {
+								if(consumes != null && consumes.length > 0) {
+									for(String type : consumes) {
+										if(acceptsHeader.contains(type)) {
+											contentTypeHeader = type;
+											break;
+										}
+									}
+								}
+							}
+							
+							request.response().headers().set(HttpHeaders.CONTENT_TYPE, producesMediaType);
+							
+							final Object[] parameters = new Object[parameterTypes.length];
+							parameters[0] = request;
+							
+							boolean isBodyResolved = false;
+							int objectParameterIndex = -1;
+							
+							if(parameters.length > 1) {
+								for(int i = 1; i < parameters.length; i++) {
+									if(parameterAnnotations[i].length > 0 || 
+											HttpServerResponse.class.equals(parameterTypes[i])) {
+										
+										parameters[i] = parameterResolver.resolve(method, parameterTypes[i], parameterAnnotations[i], request);
+										
+									} else if(JsonObject.class.equals(parameterTypes[i])) {
+										objectParameterIndex  = i;
+										isBodyResolved = true;
+									}
+								}
+							}
+							
+							if(isBodyResolved) {
+								resolvedBodyDelegate(binding.getDelegate(), request, objectParameterIndex, method, parameters);
+							} else {
+								delegate(binding.getDelegate(), method, parameters);
+							}
+						
 						} catch (Exception e) {
 							LOG.error("Exception occurred.", e);
 							
 							if(exceptionHandler != null) {
 								exceptionHandler.handle(request);
 							} else {
+								request.response().headers().set(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
 								request.response().setStatusCode(500);
 								request.response().setStatusMessage("Internal server error");
 								request.response().end();
 							}
 						}
+						
+								
 					}
+					
+					private void delegate(Object delegate, Method method, Object[] parameters) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+						method.invoke(delegate, parameters);
+					}
+					
+					private void resolvedBodyDelegate(final Object delegate, final HttpServerRequest request, final int objectParameterIndex, final Method method, final Object[] parameters) {
+						
+						final Buffer buffer = new Buffer();
+						
+						request.dataHandler(new Handler<Buffer>() {
+
+							@Override
+							public void handle(Buffer internalBuffer) {
+								buffer.appendBuffer(internalBuffer);
+							}
+							
+						});
+						
+						request.endHandler(new Handler<Void>() {
+
+							@Override
+							public void handle(Void event) {
+								parameters[objectParameterIndex] = new JsonObject(buffer.toString());
+								try {
+									method.invoke(delegate, parameters);
+								} catch (Exception e) {
+									LOG.error("Exception occurred.", e);
+									
+									if(exceptionHandler != null) {
+										exceptionHandler.handle(request);
+									} else {
+										request.response().setStatusCode(500);
+										request.response().setStatusMessage("Internal server error");
+										request.response().end();
+									}
+								}
+							}
+						});
+					}
+					
 				});
+				
 			}
-			
-			private void delegate(Method method, Object[] parameters) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-				method.invoke(delegate, parameters);
-			}
-			
 		});
-			
 	}
 
 }

@@ -15,6 +15,10 @@
  */
 package me.bayes.vertx.vest;
 
+import me.bayes.vertx.vest.binding.DefaultRouteBindingHolderFactory;
+import me.bayes.vertx.vest.binding.RouteBindingHolder;
+import me.bayes.vertx.vest.binding.RouteBindingHolderFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Handler;
@@ -30,12 +34,17 @@ public abstract class AbstractRouteMatcherBuilder implements RouteMatcherBuilder
 
 	protected VestApplication application;
 	protected RouteMatcher routeMatcher;
+	protected RouteBindingHolderFactory bindingHolderFactory;
+	protected RouteBindingHolder bindingHolder;
 	protected Handler<HttpServerRequest> exceptionHandler;
 
-	public AbstractRouteMatcherBuilder(VestApplication application) {
+	public AbstractRouteMatcherBuilder(VestApplication application,
+			RouteBindingHolderFactory bindingHolderFactory) {
 		super();
 		this.application = application;
 		this.routeMatcher = new RouteMatcher();
+		this.bindingHolderFactory = bindingHolderFactory;
+		this.application.addSingleton(this.routeMatcher, this.bindingHolder);
 	}
 
 	public VestApplication getApplication() {
@@ -63,9 +72,18 @@ public abstract class AbstractRouteMatcherBuilder implements RouteMatcherBuilder
 			throw new Exception("No application available.");
 		}
 		
-		buildInternal();
+		buildBindings();
 		
-		return routeMatcher;
+		return buildInternal();
+	}
+	
+	/**
+	 * This builds a holder of the bindings that will be used to create the {@link RouteMatcher}.
+	 * 
+	 * @throws Exception
+	 */
+	protected void buildBindings() throws Exception {
+		this.bindingHolder = this.bindingHolderFactory.build();
 	}
 	
 	/**
