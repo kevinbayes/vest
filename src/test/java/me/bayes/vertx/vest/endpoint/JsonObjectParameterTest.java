@@ -27,7 +27,7 @@ public class JsonObjectParameterTest extends TestVerticle {
 
 	@Test
 	public void testHandle() {
-		
+		 
 		final String echoJson = "{\"test\":\"test\"}";
 		
 		JsonObject config = new JsonObject(JSON_CONFIG_CLASSES_TO_ADD);

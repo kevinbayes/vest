@@ -97,7 +97,7 @@ public class RouteBindingHolder {
 		
 		List<MethodBinding> bindings_ = null;
 		
-		if(!bindings.containsKey(path)) {
+		if(bindings.containsKey(path)) {
 			bindings_ = bindings.get(path);
 		} else {
 			bindings_ = new ArrayList<>(1);

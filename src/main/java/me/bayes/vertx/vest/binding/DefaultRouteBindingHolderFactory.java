@@ -148,7 +148,9 @@ public class DefaultRouteBindingHolderFactory implements
 		final Produces produces = method.getAnnotation(Produces.class);
 		final Consumes consumes = method.getAnnotation(Consumes.class);
 		
-		bindingHolder.addBinding(httpMethod, path, consumes, produces, instance, clazz, method);
+		final String finalPath = UriPathUtil.convertPath(path);
+		
+		bindingHolder.addBinding(httpMethod, finalPath, consumes, produces, instance, clazz, method);
 	}
 	
 

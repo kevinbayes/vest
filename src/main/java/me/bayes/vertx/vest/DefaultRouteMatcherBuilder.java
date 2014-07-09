@@ -105,13 +105,6 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 
 		addRoutes(routeMatcher);
 		
-		//loop through classes and add then to the route matcher
-		
-		//TODO: Iterate over holder and add routes.
-//		for(Class<?> clazz : classes) {
-//			addRoutes(routeMatcher, clazz, applicationContextPath);
-//		}
-		
 		return routeMatcher;
 	}
 	/**
