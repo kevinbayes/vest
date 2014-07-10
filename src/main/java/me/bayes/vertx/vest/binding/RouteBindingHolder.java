@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * All the properties that the context should contain.
@@ -104,7 +105,9 @@ public class RouteBindingHolder {
 			bindings.put(path, bindings_);
 		}
 
-		bindings_.add(new MethodBinding(instance, clazz, method, consumes.value(), produces.value()));
+		bindings_.add(new MethodBinding(instance, clazz, method,
+				consumes == null ? new String[]{MediaType.TEXT_PLAIN} : consumes.value(), 
+						produces == null ? new String[]{MediaType.TEXT_PLAIN} : produces.value()));
 		
 	}
 	
