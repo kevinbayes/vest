@@ -28,5 +28,13 @@ public class EchoEndpoint {
 		response.headers().set(HttpHeaders.CONTENT_ENCODING, "UTF-8");
 		response.end(body.toString());
 	}
+	
+	@GET
+	@Consumes({MediaType.TEXT_PLAIN})
+	@Produces({MediaType.TEXT_PLAIN})
+	public void pingText(HttpServerRequest request, HttpServerResponse response) {
+		response.headers().set(HttpHeaders.CONTENT_ENCODING, "UTF-8");
+		response.end("Hello World!");
+	}
 
 }
