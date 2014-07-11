@@ -32,9 +32,10 @@
   </developers>
   
   <properties>
-  	<vertx.version>2.1M3</vertx.version>
+  	<vertx.version>2.1.1</vertx.version>
   	<vertx.test.version>2.0.3-final</vertx.test.version>
-  	<jaxrs.version>2.0-rc3</jaxrs.version>
+  	<vertx.test.framework.version>2.0.0-final</vertx.test.framework.version>
+  	<jaxrs.version>2.0</jaxrs.version>
   	<junit.version>4.11</junit.version>
   </properties>
   
@@ -60,6 +61,13 @@
 	    <version>${vertx.test.version}</version>
 	    <scope>test</scope>
 	</dependency>
+	
+	<dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-testframework</artifactId>
+      <version>${vertx.test.framework.version}</version>
+      <scope>test</scope>
+    </dependency>
 
   	<dependency>
 	    <groupId>javax.ws.rs</groupId>
@@ -78,6 +86,11 @@
   
   <build>
   	<plugins>
+  		<plugin>
+	        <groupId>org.codehaus.mojo</groupId>
+	        <artifactId>taglist-maven-plugin</artifactId>
+	        <version>2.4</version>
+	      </plugin>
   		<plugin>
   			<groupId>org.apache.maven.plugins</groupId>
   			<artifactId>maven-compiler-plugin</artifactId>
@@ -113,5 +126,34 @@
 		</plugin>
   	</plugins>
   </build>
+  
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <tagListOptions>
+            <tagClasses>
+              <tagClass>
+                <displayName>Todo Work</displayName>
+                <tags>
+                  <tag>
+                    <matchString>todo</matchString>
+                    <matchType>ignoreCase</matchType>
+                  </tag>
+                  <tag>
+                    <matchString>FIXME</matchString>
+                    <matchType>exact</matchType>
+                  </tag>
+                </tags>
+              </tagClass>
+            </tagClasses>
+          </tagListOptions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 
 </project>
