@@ -24,6 +24,8 @@ Current Support
 TODO
 ====
 - Enums support - see me.bayes.vertx.vest.util.JaxrsAnnotationParamterHandler
+- Custom objects deserialization support
+- Validation support
 - ...
 
 Introduction
