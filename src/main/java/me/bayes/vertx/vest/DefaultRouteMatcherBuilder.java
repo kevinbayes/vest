@@ -15,25 +15,19 @@
  */
 package me.bayes.vertx.vest;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.bayes.vertx.vest.binding.DefaultRouteBindingHolderFactory;
 import me.bayes.vertx.vest.binding.Function;
 import me.bayes.vertx.vest.binding.RouteBindingHolder.MethodBinding;
@@ -215,11 +209,12 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 							parameters[0] = request;
 							
 							boolean isBodyResolved = false;
+							boolean deserializeUsingJackson = false;
 							int objectParameterIndex = -1;
 							
 							if(parameters.length > 1) {
 								for(int i = 1; i < parameters.length; i++) {
-									if(parameterAnnotations[i].length > 0 || 
+									if(hasJaxRsAnnotations(parameterAnnotations[i]) ||
 											HttpServerResponse.class.equals(parameterTypes[i])) {
 										
 										parameters[i] = parameterResolver.resolve(method, parameterTypes[i], parameterAnnotations[i], request);
@@ -227,12 +222,17 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 									} else if(JsonObject.class.equals(parameterTypes[i])) {
 										objectParameterIndex  = i;
 										isBodyResolved = true;
+										deserializeUsingJackson = false;
+									} else {
+										objectParameterIndex  = i;
+										isBodyResolved = true;
+										deserializeUsingJackson = true;
 									}
 								}
 							}
 							
 							if(isBodyResolved) {
-								resolvedBodyDelegate(binding.getDelegate(), request, objectParameterIndex, method, parameters);
+								resolvedBodyDelegate(binding.getDelegate(), request, objectParameterIndex, method, parameters, parameterTypes, deserializeUsingJackson);
 							} else {
 								delegate(binding.getDelegate(), method, parameters);
 							}
@@ -257,7 +257,9 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 						method.invoke(delegate, parameters);
 					}
 					
-					private void resolvedBodyDelegate(final Object delegate, final HttpServerRequest request, final int objectParameterIndex, final Method method, final Object[] parameters) {
+					private void resolvedBodyDelegate(final Object delegate, final HttpServerRequest request,
+													  final int objectParameterIndex, final Method method,
+													  final Object[] parameters, final Class<?>[] parameterTypes, final boolean deserializeUsingJackson) {
 						
 						final Buffer buffer = new Buffer();
 						
@@ -274,19 +276,35 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 
 							@Override
 							public void handle(Void event) {
-								parameters[objectParameterIndex] = new JsonObject(buffer.toString());
+								String jsonString = buffer.toString();
+								if (deserializeUsingJackson) {
+									try {
+										parameters[objectParameterIndex] = application
+												.getSingleton(ObjectMapper.class)
+												.readValue(jsonString, parameterTypes[objectParameterIndex]);
+									} catch (IOException e) {
+										handleException(e);
+									}
+								} else {
+									parameters[objectParameterIndex] = new JsonObject(jsonString);
+								}
+
 								try {
 									method.invoke(delegate, parameters);
 								} catch (Exception e) {
-									LOG.error("Exception occurred.", e);
-									
-									if(exceptionHandler != null) {
-										exceptionHandler.handle(request);
-									} else {
-										request.response().setStatusCode(500);
-										request.response().setStatusMessage("Internal server error");
-										request.response().end();
-									}
+									handleException(e);
+								}
+							}
+
+							private void handleException(Exception e) {
+								LOG.error("Exception occurred.", e);
+
+								if(exceptionHandler != null) {
+									exceptionHandler.handle(request);
+								} else {
+									request.response().setStatusCode(500);
+									request.response().setStatusMessage("Internal server error");
+									request.response().end();
 								}
 							}
 						});
@@ -296,6 +314,21 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 				
 			}
 		});
+	}
+
+	private boolean hasJaxRsAnnotations(Annotation[] parameterAnnotation) {
+		for (Annotation annotation : parameterAnnotation) {
+			if (annotation.annotationType() == BeanParam.class ||
+					annotation.annotationType() == CookieParam.class ||
+					annotation.annotationType() == FormParam.class ||
+					annotation.annotationType() == HeaderParam.class ||
+					annotation.annotationType() == MatrixParam.class ||
+					annotation.annotationType() == PathParam.class ||
+					annotation.annotationType() == QueryParam.class) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -5,7 +5,7 @@
   <version>0.2.0</version>
   <name>Vest Framework</name>
   <description>Jaxrs extension for creating REST services with Vertx</description>
-  
+
   <licenses>
   	<license>
   		<name>Apache License 2.0</name>
@@ -18,7 +18,7 @@
   	<url>https://github.com/kevinbayes/vertx-route-ext</url>
   	<connection>https://github.com/kevinbayes/vertx-route-ext.git</connection>
   </scm>
-  
+
   <developers>
   	<developer>
   		<id>kevinbayes</id>
@@ -30,16 +30,17 @@
   		</roles>
   	</developer>
   </developers>
-  
+
   <properties>
-  	<vertx.version>2.1.1</vertx.version>
+  	<vertx.version>2.1.5</vertx.version>
   	<vertx.test.version>2.0.3-final</vertx.test.version>
   	<vertx.test.framework.version>2.0.0-final</vertx.test.framework.version>
   	<jaxrs.version>2.0</jaxrs.version>
   	<junit.version>4.11</junit.version>
+  	<jackson.version>2.5.2</jackson.version>
   </properties>
-  
-  
+
+
   <dependencies>
   	<dependency>
   		<groupId>io.vertx</groupId>
@@ -47,21 +48,21 @@
   		<version>${vertx.version}</version>
   		<scope>provided</scope>
   	</dependency>
-  	
+
   	<dependency>
 	    <groupId>io.vertx</groupId>
 	    <artifactId>vertx-platform</artifactId>
 	    <version>${vertx.version}</version>
 	    <scope>provided</scope>
 	</dependency>
-  	
+
 	<dependency>
 	    <groupId>io.vertx</groupId>
     	<artifactId>testtools</artifactId>
 	    <version>${vertx.test.version}</version>
 	    <scope>test</scope>
 	</dependency>
-	
+
 	<dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-testframework</artifactId>
@@ -74,8 +75,23 @@
 	    <artifactId>javax.ws.rs-api</artifactId>
 	    <version>${jaxrs.version}</version>
 	</dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+	  <dependency>
+		  <groupId>com.github.drapostolos</groupId>
+		  <artifactId>type-parser</artifactId>
+		  <version>0.5.0</version>
+	  </dependency>
 
-  	<dependency>
+	  <dependency>
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
   		<version>${junit.version}</version>
@@ -83,7 +99,7 @@
   	</dependency>
 
   </dependencies>
-  
+
   <build>
   	<plugins>
   		<plugin>
@@ -112,21 +128,9 @@
 		    </execution>
 		  </executions>
 		</plugin>
-		<plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-javadoc-plugin</artifactId>
-		  <executions>
-		    <execution>
-		      <id>attach-javadocs</id>
-		      <goals>
-		        <goal>jar</goal>
-		      </goals>
-		    </execution>
-		  </executions>
-		</plugin>
   	</plugins>
   </build>
-  
+
   <reporting>
     <plugins>
       <plugin>
