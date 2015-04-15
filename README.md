@@ -74,7 +74,7 @@ application.addPackagesToScan("<package to scan>");
 
 HttpServer server = vertx.createHttpServer();
 
-application.addSingleton(vertx);
+application.addSingleton(vertx, new ObjectMapper());
 
 RouteMatcherBuilder builder = new JaxrsRouteMatcherBuilder(application);
 server.requestHandler(builder.build());
