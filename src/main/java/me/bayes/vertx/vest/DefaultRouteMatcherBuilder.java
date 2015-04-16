@@ -15,34 +15,24 @@
  */
 package me.bayes.vertx.vest;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.bayes.vertx.vest.binding.DefaultRouteBindingHolderFactory;
 import me.bayes.vertx.vest.binding.Function;
 import me.bayes.vertx.vest.binding.RouteBindingHolder.MethodBinding;
+import me.bayes.vertx.vest.handler.HttpServerRequestHandler;
 import me.bayes.vertx.vest.util.DefaultParameterResolver;
 import me.bayes.vertx.vest.util.ParameterResolver;
 import me.bayes.vertx.vest.util.UriPathUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Handler;
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.core.http.HttpServerResponse;
 import org.vertx.java.core.http.RouteMatcher;
-import org.vertx.java.core.json.JsonObject;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
+import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * <pre>
@@ -80,17 +70,12 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	private static final Logger LOG = LoggerFactory.getLogger(DefaultRouteMatcherBuilder.class);
 	
 	private final ParameterResolver parameterResolver;
-	
-	/**
-	 * Requires a {@link VestContext}.
-	 * @param context
-	 */
+
 	public DefaultRouteMatcherBuilder(final VestApplication application) {
 		super(application, new DefaultRouteBindingHolderFactory(application));
 		this.parameterResolver = new DefaultParameterResolver(application);
 	}
 
-	
 	/*
 	 * (non-Javadoc)
 	 * @see me.bayes.vertx.extension.RouteMatcherBuilder#build(me.bayes.vertx.extension.BuilderContext)
@@ -108,6 +93,8 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 	 * @throws Exception
 	 */
 	private void addRoutes(final RouteMatcher routeMatcher) throws Exception {
+		final ObjectMapper objectMapper = application.getSingleton(ObjectMapper.class);
+
 		this.bindingHolder.foreach(new Function() {
 			public void apply(final String method, final String key, final List<MethodBinding> bindings) throws Exception {
 				
@@ -118,217 +105,13 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 							Handler.class);
 				
 				final String finalPath = UriPathUtil.convertPath(key);
-				
+
 				routeMatcherMethod.invoke(routeMatcher, finalPath,
-						new Handler<HttpServerRequest>() {
-					
-					private List<MethodBinding> delegates;
-					
-					{
-						delegates = bindings;
-					}
-					
-					public void handle(HttpServerRequest request) {
-						
-						try {
-						
-							MethodBinding binding = null;
-							Method method = null;
-							
-							String acceptsHeader = request.headers().get(HttpHeaders.ACCEPT);
-							String contentTypeHeader = request.headers().get(HttpHeaders.CONTENT_TYPE);
-							
-							if(!request.headers().isEmpty()) {
-								for(MethodBinding binding_ : bindings) {
-									if(binding_.hasConsumes(contentTypeHeader) && binding_.hasProduces(acceptsHeader)) {
-										binding = binding_;
-										break;
-									}
-									if(binding_.hasConsumes(contentTypeHeader) && acceptsHeader == null) {
-										binding = binding_;
-										break;
-									}
-									if(contentTypeHeader == null && binding_.hasProduces(acceptsHeader)) {
-										binding = binding_;
-										break;
-									}
-								}
-								
-							}
-								
-							if(binding == null && delegates.size() > 0) {
-								binding = delegates.get(0);
-							} else if(binding == null){
-								throw new Exception("No route that supports accepts given HTTP parameters");
-							}
-							
-							method = binding.getMethod();
-							
-							final Class<?>[] parameterTypes = method.getParameterTypes();
-							if(parameterTypes.length == 0 || !parameterTypes[0].equals(HttpServerRequest.class)) {
-								LOG.warn("Classes marked with a HttpMethod must have at least one parameter. The first parameter should be HttpServerRequest.");
-								return;
-							}
-							
-							final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-							final String[] produces = binding.getProduces();
-							final String[] consumes = binding.getConsumes();
-							String producesMediaType = null;
-							
-							if(acceptsHeader != null) {
-								if(produces != null && produces.length > 0) {
-									for(String type : produces) {
-										if(acceptsHeader.contains(type)) {
-											producesMediaType = type;
-											break;
-										}
-									}
-								}
-							}
-							
-							if(producesMediaType == null) {
-								producesMediaType = 
-										(produces != null && produces.length == 1) ? 
-												produces[0] : MediaType.TEXT_PLAIN;
-							} 
-							
-							if(contentTypeHeader != null) {
-								if(consumes != null && consumes.length > 0) {
-									for(String type : consumes) {
-										if(acceptsHeader.contains(type)) {
-											contentTypeHeader = type;
-											break;
-										}
-									}
-								}
-							}
-							
-							request.response().headers().set(HttpHeaders.CONTENT_TYPE, producesMediaType);
-							
-							final Object[] parameters = new Object[parameterTypes.length];
-							parameters[0] = request;
-							
-							boolean isBodyResolved = false;
-							boolean deserializeUsingJackson = false;
-							int objectParameterIndex = -1;
-							
-							if(parameters.length > 1) {
-								for(int i = 1; i < parameters.length; i++) {
-									if(hasJaxRsAnnotations(parameterAnnotations[i]) ||
-											HttpServerResponse.class.equals(parameterTypes[i])) {
-										
-										parameters[i] = parameterResolver.resolve(method, parameterTypes[i], parameterAnnotations[i], request);
-										
-									} else if(JsonObject.class.equals(parameterTypes[i])) {
-										objectParameterIndex  = i;
-										isBodyResolved = true;
-										deserializeUsingJackson = false;
-									} else {
-										objectParameterIndex  = i;
-										isBodyResolved = true;
-										deserializeUsingJackson = true;
-									}
-								}
-							}
-							
-							if(isBodyResolved) {
-								resolvedBodyDelegate(binding.getDelegate(), request, objectParameterIndex, method, parameters, parameterTypes, deserializeUsingJackson);
-							} else {
-								delegate(binding.getDelegate(), method, parameters);
-							}
-						
-						} catch (Exception e) {
-							LOG.error("Exception occurred.", e);
-							
-							if(exceptionHandler != null) {
-								exceptionHandler.handle(request);
-							} else {
-								request.response().headers().set(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
-								request.response().setStatusCode(500);
-								request.response().setStatusMessage("Internal server error");
-								request.response().end();
-							}
-						}
-						
-								
-					}
-					
-					private void delegate(Object delegate, Method method, Object[] parameters) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-						method.invoke(delegate, parameters);
-					}
-					
-					private void resolvedBodyDelegate(final Object delegate, final HttpServerRequest request,
-													  final int objectParameterIndex, final Method method,
-													  final Object[] parameters, final Class<?>[] parameterTypes, final boolean deserializeUsingJackson) {
-						
-						final Buffer buffer = new Buffer();
-						
-						request.dataHandler(new Handler<Buffer>() {
-
-							@Override
-							public void handle(Buffer internalBuffer) {
-								buffer.appendBuffer(internalBuffer);
-							}
-							
-						});
-						
-						request.endHandler(new Handler<Void>() {
-
-							@Override
-							public void handle(Void event) {
-								String jsonString = buffer.toString();
-								if (deserializeUsingJackson) {
-									try {
-										parameters[objectParameterIndex] = application
-												.getSingleton(ObjectMapper.class)
-												.readValue(jsonString, parameterTypes[objectParameterIndex]);
-									} catch (IOException e) {
-										handleException(e);
-									}
-								} else {
-									parameters[objectParameterIndex] = new JsonObject(jsonString);
-								}
-
-								try {
-									method.invoke(delegate, parameters);
-								} catch (Exception e) {
-									handleException(e);
-								}
-							}
-
-							private void handleException(Exception e) {
-								LOG.error("Exception occurred.", e);
-
-								if(exceptionHandler != null) {
-									exceptionHandler.handle(request);
-								} else {
-									request.response().setStatusCode(500);
-									request.response().setStatusMessage("Internal server error");
-									request.response().end();
-								}
-							}
-						});
-					}
-					
-				});
+						new HttpServerRequestHandler(bindings, parameterResolver, objectMapper));
 				
 			}
 		});
 	}
 
-	private boolean hasJaxRsAnnotations(Annotation[] parameterAnnotation) {
-		for (Annotation annotation : parameterAnnotation) {
-			if (annotation.annotationType() == BeanParam.class ||
-					annotation.annotationType() == CookieParam.class ||
-					annotation.annotationType() == FormParam.class ||
-					annotation.annotationType() == HeaderParam.class ||
-					annotation.annotationType() == MatrixParam.class ||
-					annotation.annotationType() == PathParam.class ||
-					annotation.annotationType() == QueryParam.class) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 }

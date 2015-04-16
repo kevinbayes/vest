@@ -15,10 +15,8 @@
  */
 package me.bayes.vertx.vest;
 
-import me.bayes.vertx.vest.binding.DefaultRouteBindingHolderFactory;
 import me.bayes.vertx.vest.binding.RouteBindingHolder;
 import me.bayes.vertx.vest.binding.RouteBindingHolderFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Handler;
@@ -36,7 +34,6 @@ public abstract class AbstractRouteMatcherBuilder implements RouteMatcherBuilder
 	protected RouteMatcher routeMatcher;
 	protected RouteBindingHolderFactory bindingHolderFactory;
 	protected RouteBindingHolder bindingHolder;
-	protected Handler<HttpServerRequest> exceptionHandler;
 
 	public AbstractRouteMatcherBuilder(VestApplication application,
 			RouteBindingHolderFactory bindingHolderFactory) {
@@ -102,16 +99,6 @@ public abstract class AbstractRouteMatcherBuilder implements RouteMatcherBuilder
 	 */
 	public void setNoRouteHandler(Handler<HttpServerRequest> handler) {
 		routeMatcher.noMatch(handler);
-	}
-	
-	/*
-	 *  TODO: Add the implemetation required by the specification.
-	 *  
-	 * (non-Javadoc)
-	 * @see me.bayes.vertx.vest.RouteMatcherBuilder#setExceptionHandler(org.vertx.java.core.Handler)
-	 */
-	public void setExceptionHandler(Handler<HttpServerRequest> handler) {	
-		this.exceptionHandler = handler;
 	}
 	
 }
