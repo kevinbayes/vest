@@ -105,8 +105,7 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 							Handler.class);
 				
 				final String finalPath = UriPathUtil.convertPath(key);
-				LOG.info(String.format("Added %s %s to be handled by %s", method, finalPath, routeMatcherMethod));
-				
+
 				routeMatcherMethod.invoke(routeMatcher, finalPath,
 						new HttpServerRequestHandler(bindings, parameterResolver, objectMapper));
 				

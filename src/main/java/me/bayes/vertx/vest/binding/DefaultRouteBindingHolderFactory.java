@@ -15,21 +15,20 @@
  */
 package me.bayes.vertx.vest.binding;
 
-import java.lang.reflect.Method;
-import java.util.Set;
+import me.bayes.vertx.vest.VestApplication;
+import me.bayes.vertx.vest.util.ContextUtil;
+import me.bayes.vertx.vest.util.HttpUtils;
+import me.bayes.vertx.vest.util.UriPathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-
-import me.bayes.vertx.vest.VestApplication;
-import me.bayes.vertx.vest.util.ContextUtil;
-import me.bayes.vertx.vest.util.HttpUtils;
-import me.bayes.vertx.vest.util.UriPathUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Set;
 
 /**
  * @author Kevin Bayes
@@ -123,7 +122,7 @@ public class DefaultRouteBindingHolderFactory implements
 		}
 		
 		//3.3.1	Visibility Only public methods may be exposed as resource methods.
-		if(method.getModifiers() != Method.PUBLIC) {
+		if( !Modifier.isPublic(method.getModifiers())) {
 			LOG.warn("Method {} is not public and is annotated with @Path.", method.getName());
 		}
 		
@@ -149,6 +148,8 @@ public class DefaultRouteBindingHolderFactory implements
 		final Consumes consumes = method.getAnnotation(Consumes.class);
 		
 		final String finalPath = UriPathUtil.convertPath(path);
+
+		LOG.info(String.format("Added %s %s to be handled by %s.%s", httpMethod.value(), finalPath, clazz.getCanonicalName(), method.getName()));
 		
 		bindingHolder.addBinding(httpMethod, finalPath, consumes, produces, instance, clazz, method);
 	}
