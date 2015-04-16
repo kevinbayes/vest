@@ -15,6 +15,7 @@
  */
 package me.bayes.vertx.vest;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
+import com.github.drapostolos.typeparser.TypeParser;
 import me.bayes.vertx.vest.deploy.RootContextVestApplication;
 
 import org.vertx.java.core.logging.Logger;
@@ -52,10 +54,19 @@ import org.vertx.java.platform.impl.java.PackageHelper;
 public abstract class VestApplication extends Application {
 	
 	private final static Logger LOG = LoggerFactory.getLogger(VestApplication.class);
-	
+
+	public VestApplication() {
+		TypeParser typeParser = TypeParser
+				.newBuilder()
+				.unregisterParser(Object.class)
+				.unregisterParser(File.class)
+				.build();
+		singletons.add(typeParser);
+	}
+
 	/*
-	 * Classloader to load scanned classes.
-	 */
+         * Classloader to load scanned classes.
+         */
 	private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	
 	/*
@@ -92,7 +103,17 @@ public abstract class VestApplication extends Application {
 	public Set<Object> getSingletons() {
 		return singletons;
 	}
-	
+
+	public <T> T getSingleton(Class<? extends T> type) {
+		for(Object object : singletons) {
+			if(type.isInstance(object)) {
+				return (T)object;
+			}
+		}
+
+		return null;
+	}
+
 	@Override
 	public Map<String, Object> getProperties() {
 		return properties;

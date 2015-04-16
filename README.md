@@ -23,7 +23,10 @@ Current Support
 
 TODO
 ====
-Check issues
+- Enums support - see me.bayes.vertx.vest.util.JaxrsAnnotationParamterHandler
+- Custom objects deserialization support
+- Validation support
+- ...
 
 Introduction
 ============
@@ -71,7 +74,7 @@ application.addPackagesToScan("<package to scan>");
 
 HttpServer server = vertx.createHttpServer();
 
-application.addSingleton(vertx);
+application.addSingleton(vertx, new ObjectMapper());
 
 RouteMatcherBuilder builder = new JaxrsRouteMatcherBuilder(application);
 server.requestHandler(builder.build());
