@@ -39,7 +39,7 @@ import javax.ws.rs.ext.Provider;
 
 import me.bayes.vertx.vest.deploy.RootContextVestApplication;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
 import org.vertx.java.platform.impl.java.PackageHelper;

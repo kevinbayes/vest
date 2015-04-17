@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.bayes</groupId>
   <artifactId>vest-framework</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.2</version>
   <name>Vest Framework</name>
   <description>Jaxrs extension for creating REST services with Vertx</description>
 
@@ -95,6 +95,11 @@
       <groupId>javax.annotation</groupId>
       <artifactId>javax.annotation-api</artifactId>
       <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
     </dependency>
 
     <dependency>

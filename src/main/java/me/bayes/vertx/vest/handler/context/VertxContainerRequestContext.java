@@ -21,8 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.vertx.java.core.MultiMap;
 import org.vertx.java.core.http.HttpServerRequest;
 
@@ -62,7 +62,7 @@ public class VertxContainerRequestContext implements ContainerRequestContext {
 
 	@Override
 	public UriInfo getUriInfo() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class VertxContainerRequestContext implements ContainerRequestContext {
 
 	@Override
 	public Request getRequest() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class VertxContainerRequestContext implements ContainerRequestContext {
 
 	@Override
 	public void setMethod(String method) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
@@ -159,22 +159,22 @@ public class VertxContainerRequestContext implements ContainerRequestContext {
 
 	@Override
 	public Map<String, Cookie> getCookies() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
 	public boolean hasEntity() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
 	public InputStream getEntityStream() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
 	public void setEntityStream(InputStream input) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
@@ -184,7 +184,7 @@ public class VertxContainerRequestContext implements ContainerRequestContext {
 
 	@Override
 	public void setSecurityContext(SecurityContext context) {
-		throw new NotImplementedException();
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
