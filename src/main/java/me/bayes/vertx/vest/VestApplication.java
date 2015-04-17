@@ -283,7 +283,7 @@ public abstract class VestApplication extends Application {
 			List<Class<?>> matched = new ArrayList<>();
 			for (Entry<Integer, List<Class<?>>> providersEntry : providerClasses.entrySet()) {
 				for (Class<?> providerClass : providersEntry.getValue()) {
-					if (providerClass.isAssignableFrom(clazz)) {
+					if (clazz.isAssignableFrom(providerClass)) {
 						matched.add(providerClass);
 					}
 				}
