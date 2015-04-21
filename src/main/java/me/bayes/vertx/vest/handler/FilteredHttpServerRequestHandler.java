@@ -36,6 +36,7 @@ public class FilteredHttpServerRequestHandler extends HttpServerRequestHandler {
 		ContainerRequestContext requestContext = new VertxContainerRequestContext(request);
 		for (ContainerRequestFilter containerRequestFilter : containerRequestFilters) {
 			try {
+				LOG.info("Run filted: " + containerRequestFilter);
 				containerRequestFilter.filter(requestContext);
 			} catch (IOException e) {
 				e.printStackTrace();

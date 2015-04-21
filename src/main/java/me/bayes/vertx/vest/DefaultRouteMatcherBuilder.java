@@ -15,24 +15,38 @@
  */
 package me.bayes.vertx.vest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Method;
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
+import javax.ws.rs.OPTIONS;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
+
 import me.bayes.vertx.vest.binding.DefaultRouteBindingHolderFactory;
 import me.bayes.vertx.vest.binding.Function;
 import me.bayes.vertx.vest.binding.RouteBindingHolder.MethodBinding;
+import me.bayes.vertx.vest.handler.FilteredHttpServerRequestHandler;
 import me.bayes.vertx.vest.handler.HttpServerRequestHandler;
 import me.bayes.vertx.vest.util.DefaultParameterResolver;
 import me.bayes.vertx.vest.util.ParameterResolver;
 import me.bayes.vertx.vest.util.UriPathUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.RouteMatcher;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import java.lang.reflect.Method;
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * <pre>
@@ -106,8 +120,10 @@ public class DefaultRouteMatcherBuilder extends AbstractRouteMatcherBuilder {
 				
 				final String finalPath = UriPathUtil.convertPath(key);
 
-				routeMatcherMethod.invoke(routeMatcher, finalPath,
-						new HttpServerRequestHandler(bindings, parameterResolver, objectMapper));
+				HttpServerRequestHandler requestHandler = new FilteredHttpServerRequestHandler(bindings, parameterResolver, objectMapper,
+						application.getProviders(ContainerRequestFilter.class),
+						application.getProviders(ContainerResponseFilter.class));
+				routeMatcherMethod.invoke(routeMatcher, finalPath, requestHandler);
 				
 			}
 		});
