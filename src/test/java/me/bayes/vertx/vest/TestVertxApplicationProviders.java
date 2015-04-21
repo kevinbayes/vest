@@ -1,6 +1,7 @@
 package me.bayes.vertx.vest;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import me.bayes.vertx.vest.sample.BaseSampleProvider;
@@ -25,9 +26,11 @@ public class TestVertxApplicationProviders {
 		application.addPackagesToScan(packages);
 
 		// Then
-		Assertions.assertThat(application.getProviders(SampleProvider.class))
-				.hasSize(3)
-				.containsSequence(BaseSampleProvider.class, OtherSampleProvider.class, LateSampleProvider.class);
+		List<SampleProvider> providers = application.getProviders(SampleProvider.class);
+		Assertions.assertThat(providers).hasSize(3);
+		Assertions.assertThat(providers.get(0)).isExactlyInstanceOf(BaseSampleProvider.class);
+		Assertions.assertThat(providers.get(1)).isExactlyInstanceOf(OtherSampleProvider.class);
+		Assertions.assertThat(providers.get(2)).isExactlyInstanceOf(LateSampleProvider.class);
 	}
 
 }
