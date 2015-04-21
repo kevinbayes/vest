@@ -39,7 +39,7 @@ import javax.ws.rs.ext.Provider;
 
 import me.bayes.vertx.vest.deploy.RootContextVestApplication;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
 import org.vertx.java.platform.impl.java.PackageHelper;
@@ -113,7 +113,7 @@ public abstract class VestApplication extends Application {
 	/*
 	 * Used to 
 	 */
-	private Map<Class<?>, List<Class<?>>> providerClassesCache = new HashMap<>();
+	private Map<Class<?>, List<?>> providersCache = new HashMap<>();
 	
 	/*
 	 * (non-Javadoc)
@@ -262,8 +262,9 @@ public abstract class VestApplication extends Application {
 		priority = (Integer) ObjectUtils.defaultIfNull(priority,
 				DEFAULT_PROVIDER_PRIORITY);
 		List<Class<?>> classes = providerClasses.get(priority);
+		LOG.info("Registered provider: " + providerClass + " with priority: " + priority);
 		if (classes != null) {
-			LOG.warn("Already registered provider with priority {}");
+			LOG.warn("Already registered provider with priority: " + priority);
 			classes.add(providerClass);
 		} else {
 			classes = new ArrayList<Class<?>>(1);
@@ -274,23 +275,34 @@ public abstract class VestApplication extends Application {
 	
 	/**
 	 * 
+	 * @param <T>
 	 * @param clazz
 	 *            - class or superclass of provider class.
 	 * @return
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public List<Class<?>> getProviders(Class<?> clazz) {
-		if (!providerClassesCache.containsKey(clazz)) {
-			List<Class<?>> matched = new ArrayList<>();
+	public <T> List<T> getProviders(Class<T> clazz) {
+		if (!providersCache.containsKey(clazz)) {
+			List<T> matched = new ArrayList<>();
 			for (Entry<Integer, List<Class<?>>> providersEntry : providerClasses.entrySet()) {
 				for (Class<?> providerClass : providersEntry.getValue()) {
 					if (clazz.isAssignableFrom(providerClass)) {
-						matched.add(providerClass);
+						try {
+							@SuppressWarnings("unchecked")
+							T newInstance = (T)providerClass.newInstance();
+							matched.add(newInstance);
+						} catch (InstantiationException | IllegalAccessException e) {
+							throw new IllegalArgumentException("Chech if Provider class " + providerClass + " has public nullary constructor.", e);
+						}
 					}
 				}
 			}
-			providerClassesCache.put(clazz, matched);
+			providersCache.put(clazz, matched);
 		}
-		return providerClassesCache.get(clazz);
+		@SuppressWarnings("unchecked")
+		List<T> providers = (List<T>) providersCache.get(clazz);
+		return providers;
 	}
 
 	/**
