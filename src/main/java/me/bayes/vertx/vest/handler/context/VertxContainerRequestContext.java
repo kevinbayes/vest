@@ -284,7 +284,7 @@ public class VertxContainerRequestContext implements ContainerRequestContext {
 
 		@Override
 		public UriBuilder getRequestUriBuilder() {
-			return UriBuilder.fromUri(getRequestUri());
+			return UriBuilderImpl.fromUri(getRequestUri());
 		}
 
 		@Override
@@ -292,13 +292,12 @@ public class VertxContainerRequestContext implements ContainerRequestContext {
 			if (absolutePathUri != null)
 				return absolutePathUri;
 
-			// return absolutePathUri = UriBuilder.fromUri(requestUri).replaceQuery("").fragment("").build();
-			return rsRequest.absoluteURI(); // TODO
+			return absolutePathUri = UriBuilderImpl.fromUri(requestUri).replaceQuery("").fragment("").build();
 		}
 
 		@Override
 		public UriBuilder getAbsolutePathBuilder() {
-			return UriBuilder.fromUri(getAbsolutePath());
+			return UriBuilderImpl.fromUri(getAbsolutePath());
 		}
 
 		@Override
@@ -308,7 +307,7 @@ public class VertxContainerRequestContext implements ContainerRequestContext {
 
 		@Override
 		public UriBuilder getBaseUriBuilder() {
-			return UriBuilder.fromUri(getBaseUri());
+			return UriBuilderImpl.fromUri(getBaseUri());
 		}
 
 		@Override
