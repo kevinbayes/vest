@@ -52,13 +52,6 @@ public interface RouteMatcherBuilder {
 	 */
 	void setApplication(VestApplication application);
 	
-	
-	/**
-	 * @param handler for exception;
-	 */
-	void setExceptionHandler(Handler<HttpServerRequest> handler);
-	
-	
 	/**
 	 * This method should be overridden if a better no match is needed besides the 
 	 * default of a 404.

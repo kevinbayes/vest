@@ -15,6 +15,7 @@
  */
 package me.bayes.vertx.vest.util;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
@@ -44,5 +45,5 @@ public interface ParameterHandler<R> {
 	 * @param request
 	 * @return
 	 */
-	R handle(final Method method, final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request);
+	R handle(final Method method, final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request) throws IOException, ReflectiveOperationException;
 }

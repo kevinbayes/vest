@@ -15,6 +15,7 @@
  */
 package me.bayes.vertx.vest.util;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
@@ -26,35 +27,43 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import com.github.drapostolos.typeparser.TypeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.http.HttpServerRequest;
 
-public class JaxrsAnnotationParamterHandler implements ParameterHandler<Object> {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(JaxrsAnnotationParamterHandler.class);
+public class JaxrsAnnotationParameterHandler implements ParameterHandler<Object> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(JaxrsAnnotationParameterHandler.class);
+
+	private TypeParser typeParser;
+
+	public JaxrsAnnotationParameterHandler(TypeParser typeParser) {
+		this.typeParser = typeParser;
+	}
 
 	@Override
 	public Object handle(final Method method, Class<?> parameterType, Annotation[] annotations,
-			HttpServerRequest request) {
-		
-		Object returnObject = null;
+			HttpServerRequest request) throws IOException, ReflectiveOperationException {
+
+		Object returnObject;
+		String param = null;
 		Object defaultValue = null;
-		
+
 		for(Annotation annotation : annotations) {
-			
+
 			if(annotation.annotationType().equals(PathParam.class)) {
 				//Path Parameters
 				PathParam pathParam = (PathParam) annotation;
-				returnObject = request.params().get(pathParam.value());
+				param = request.params().get(pathParam.value());
 			} else if(annotation.annotationType().equals(QueryParam.class)) {
 				//Query Parameters
 				QueryParam queryParam = (QueryParam) annotation;
-				returnObject = request.params().get(queryParam.value());
+				param = request.params().get(queryParam.value());
 			} else if(annotation.annotationType().equals(HeaderParam.class)) {
 				//HTTP Headers
 				HeaderParam pathParam = (HeaderParam) annotation;
-				returnObject = request.headers().get(pathParam.value());
+				param = request.headers().get(pathParam.value());
 			} else if(annotation.annotationType().equals(DefaultValue.class)) {
 				DefaultValue defaultValueAnnotation = (DefaultValue) annotation;
 				defaultValue = defaultValueAnnotation.value();
@@ -63,13 +72,19 @@ public class JaxrsAnnotationParamterHandler implements ParameterHandler<Object> 
 				annotation.annotationType().equals(FormParam.class)) {
 				LOG.warn("Matrix & cookie && form parameters are not supported.");
 			}
-			
-			if(returnObject != null) {
+
+			if(param != null) {
 				break;
 			}
 		}
-		
-		return returnObject == null ? defaultValue : returnObject;
+
+		if (param != null) {
+            returnObject = typeParser.parseType(param, parameterType);
+		} else {
+			returnObject = defaultValue;
+		}
+
+		return returnObject;
 	}
 
 }

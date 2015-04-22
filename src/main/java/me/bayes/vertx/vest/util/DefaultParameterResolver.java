@@ -15,24 +15,20 @@
  */
 package me.bayes.vertx.vest.util;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import javax.ws.rs.CookieParam;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 
+import com.github.drapostolos.typeparser.TypeParser;
 import me.bayes.vertx.vest.VestApplication;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.http.HttpServerResponse;
-import org.vertx.java.core.json.JsonObject;
 
 /**
  * <pre>
@@ -66,12 +62,14 @@ public final class DefaultParameterResolver implements ParameterResolver {
 	 * @param request from vertx
 	 * @return object to populate
 	 */
-	public Object resolve(final Method method, final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request) {
+	public Object resolve(final Method method, final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request) throws IOException, ReflectiveOperationException {
 		
 		if(parameterType.equals(HttpServerResponse.class)) {
 			return new HttpServerResponseParameterHandler().handle(method, parameterType, annotations, request);
 		} else {
-			return new JaxrsAnnotationParamterHandler().handle(method, parameterType, annotations, request);
+			TypeParser typeParser = application.getSingleton(TypeParser.class);
+			return new JaxrsAnnotationParameterHandler(typeParser)
+					.handle(method, parameterType, annotations, request);
 		}
 		
 	}

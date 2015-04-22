@@ -1,132 +1,153 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.bayes</groupId>
   <artifactId>vest-framework</artifactId>
-  <version>0.2.0</version>
+  <version>0.2.2</version>
   <name>Vest Framework</name>
   <description>Jaxrs extension for creating REST services with Vertx</description>
-  
+
   <licenses>
-  	<license>
-  		<name>Apache License 2.0</name>
-  		<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-  	</license>
+    <license>
+      <name>Apache License 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
   </licenses>
 
 
   <scm>
-  	<url>https://github.com/kevinbayes/vertx-route-ext</url>
-  	<connection>https://github.com/kevinbayes/vertx-route-ext.git</connection>
+    <url>https://github.com/kevinbayes/vertx-route-ext</url>
+    <connection>https://github.com/kevinbayes/vertx-route-ext.git</connection>
   </scm>
-  
+
   <developers>
-  	<developer>
-  		<id>kevinbayes</id>
-  		<name>Kevin Bayes</name>
-  		<email>kevin@bayes.me</email>
-  		<organizationUrl>http://www.bayes.me</organizationUrl>
-  		<roles>
-  			<role>Software Engineer</role>
-  		</roles>
-  	</developer>
+    <developer>
+      <id>kevinbayes</id>
+      <name>Kevin Bayes</name>
+      <email>kevin@bayes.me</email>
+      <organizationUrl>http://www.bayes.me</organizationUrl>
+      <roles>
+        <role>Software Engineer</role>
+      </roles>
+    </developer>
   </developers>
-  
+
   <properties>
-  	<vertx.version>2.1.1</vertx.version>
-  	<vertx.test.version>2.0.3-final</vertx.test.version>
-  	<vertx.test.framework.version>2.0.0-final</vertx.test.framework.version>
-  	<jaxrs.version>2.0</jaxrs.version>
-  	<junit.version>4.11</junit.version>
+    <vertx.version>2.1.5</vertx.version>
+    <vertx.test.version>2.0.3-final</vertx.test.version>
+    <vertx.test.framework.version>2.0.0-final</vertx.test.framework.version>
+    <jaxrs.version>2.0</jaxrs.version>
+    <junit.version>4.11</junit.version>
+    <jackson.version>2.5.2</jackson.version>
   </properties>
-  
-  
+
+
   <dependencies>
-  	<dependency>
-  		<groupId>io.vertx</groupId>
-  		<artifactId>vertx-core</artifactId>
-  		<version>${vertx.version}</version>
-  		<scope>provided</scope>
-  	</dependency>
-  	
-  	<dependency>
-	    <groupId>io.vertx</groupId>
-	    <artifactId>vertx-platform</artifactId>
-	    <version>${vertx.version}</version>
-	    <scope>provided</scope>
-	</dependency>
-  	
-	<dependency>
-	    <groupId>io.vertx</groupId>
-    	<artifactId>testtools</artifactId>
-	    <version>${vertx.test.version}</version>
-	    <scope>test</scope>
-	</dependency>
-	
-	<dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+      <version>${vertx.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-platform</artifactId>
+      <version>${vertx.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>testtools</artifactId>
+      <version>${vertx.test.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-testframework</artifactId>
       <version>${vertx.test.framework.version}</version>
       <scope>test</scope>
     </dependency>
 
-  	<dependency>
-	    <groupId>javax.ws.rs</groupId>
-	    <artifactId>javax.ws.rs-api</artifactId>
-	    <version>${jaxrs.version}</version>
-	</dependency>
+    <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+      <version>${jaxrs.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.drapostolos</groupId>
+      <artifactId>type-parser</artifactId>
+      <version>0.5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
 
-  	<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<version>${junit.version}</version>
-  		<scope>test</scope>
-  	</dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.0.0</version>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
-  
+
   <build>
-  	<plugins>
-  		<plugin>
-	        <groupId>org.codehaus.mojo</groupId>
-	        <artifactId>taglist-maven-plugin</artifactId>
-	        <version>2.4</version>
-	      </plugin>
-  		<plugin>
-  			<groupId>org.apache.maven.plugins</groupId>
-  			<artifactId>maven-compiler-plugin</artifactId>
-  			<version>3.1</version>
-  			<configuration>
-  				<source>1.7</source>
-  				<target>1.7</target>
-  			</configuration>
-  		</plugin>
-  		<plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-source-plugin</artifactId>
-		  <executions>
-		    <execution>
-		      <id>attach-sources</id>
-		      <goals>
-		        <goal>jar</goal>
-		      </goals>
-		    </execution>
-		  </executions>
-		</plugin>
-		<plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-javadoc-plugin</artifactId>
-		  <executions>
-		    <execution>
-		      <id>attach-javadocs</id>
-		      <goals>
-		        <goal>jar</goal>
-		      </goals>
-		    </execution>
-		  </executions>
-		</plugin>
-  	</plugins>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
-  
+
   <reporting>
     <plugins>
       <plugin>
