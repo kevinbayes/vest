@@ -15,31 +15,22 @@
  */
 package me.bayes.vertx.vest.util;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.MatrixParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
 import me.bayes.vertx.vest.VestApplication;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.core.http.HttpServerResponse;
-import org.vertx.java.core.json.JsonObject;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * <pre>
  * A util to inject parameters into the methods handling REST requests.
  * 
- * TODO: Add support for {@link MatrixParam}
- * TODO: Add support for {@link CookieParam}
+ * TODO: Add support for {@link javax.ws.rs.MatrixParam}
+ * TODO: Add support for {@link javax.ws.rs.CookieParam}
  * </pre>
  * 
  * @author Kevin Bayes
@@ -48,7 +39,7 @@ import org.vertx.java.core.json.JsonObject;
  */
 public final class DefaultParameterResolver implements ParameterResolver {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultParameterResolver.class);
+	private final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private final VestApplication application;
 	
@@ -63,15 +54,17 @@ public final class DefaultParameterResolver implements ParameterResolver {
 	 * 
 	 * @param parameterType that needs to be resolved
 	 * @param annotations of the parameter
-	 * @param request from vertx
+	 * @param routingContext from vertx-apex
 	 * @return object to populate
 	 */
-	public Object resolve(final Method method, final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request) {
+	public Object resolve(final Method method, final Class<?> parameterType, final Annotation[] annotations, final RoutingContext routingContext) {
 		
 		if(parameterType.equals(HttpServerResponse.class)) {
-			return new HttpServerResponseParameterHandler().handle(method, parameterType, annotations, request);
-		} else {
-			return new JaxrsAnnotationParamterHandler().handle(method, parameterType, annotations, request);
+			return new HttpServerResponseParameterHandler().handle(method, parameterType, annotations, routingContext);
+		} else if (parameterType.equals(RoutingContext.class)) {
+            return routingContext;
+        } else {
+			return new JaxrsAnnotationParamterHandler().handle(method, parameterType, annotations, routingContext);
 		}
 		
 	}

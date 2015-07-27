@@ -15,10 +15,10 @@
  */
 package me.bayes.vertx.vest.util;
 
+import io.vertx.ext.web.RoutingContext;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-
-import org.vertx.java.core.http.HttpServerRequest;
 
 /**
  * <p>
@@ -39,9 +39,9 @@ public interface ParameterResolver {
 	 * @param method that the parameter belongs too
 	 * @param parameterType of the parameter to resolve
 	 * @param annotations that are on the parameter
-	 * @param request which is the vertx {@link HttpServerRequest}
+	 * @param routingContext which is the vertx {@link RoutingContext}
 	 * @return the resolved object
 	 */
-	Object resolve(final Method method, final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request);
+	Object resolve(final Method method, final Class<?> parameterType, final Annotation[] annotations, final RoutingContext routingContext);
 
 }

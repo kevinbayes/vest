@@ -15,16 +15,15 @@
  */
 package me.bayes.vertx.vest.util;
 
+import me.bayes.vertx.vest.VestApplication;
+
+import javax.ws.rs.core.Context;
 import java.lang.reflect.Field;
 import java.util.Set;
 
-import javax.ws.rs.core.Context;
-
-import me.bayes.vertx.vest.VestApplication;
-
 /**
  * A utility class used to work with the {@link Context} annotation.
- * 
+ *
  * @author Kevin Bayes
  * @since 1.0
  * @version 1.0
@@ -32,14 +31,14 @@ import me.bayes.vertx.vest.VestApplication;
 public final class ContextUtil {
 
 	private ContextUtil() { }
-	
+
 	/**
 	 * This method goes through the class and all the super classes searching for fields annotated with {@link Context}.
 	 * It then injects the instance available in the context else null. 
 	 * 
 	 * @param clazz
 	 * @param instance
-	 * @param context
+	 * @param application
 	 * @throws IllegalArgumentException
 	 * @throws IllegalAccessException
 	 */

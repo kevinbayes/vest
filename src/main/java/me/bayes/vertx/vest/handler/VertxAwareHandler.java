@@ -15,10 +15,11 @@
  */
 package me.bayes.vertx.vest.handler;
 
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+
 import javax.ws.rs.core.Context;
 
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.json.JsonObject;
 
 /**
  * Extend this class to ensure that your handler has access to the {@link Vertx} instance and the

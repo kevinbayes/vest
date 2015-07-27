@@ -16,17 +16,19 @@
 package me.bayes.vertx.vest;
 
 
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Context;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.vertx.java.core.http.HttpServer;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.platform.Verticle;
 
 /**
  * @author kevinbayes
  *
  */
-public abstract class AbstractVestVerticle extends Verticle implements VestService {
+public abstract class AbstractVestVerticle extends AbstractVerticle implements VestService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractVestVerticle.class);
 	
@@ -35,8 +37,9 @@ public abstract class AbstractVestVerticle extends Verticle implements VestServi
 	 */
 	@Override
 	public void start() {
-		
-		final JsonObject config = container.config();
+
+		final Context context = vertx.getOrCreateContext();
+		final JsonObject config = context.config();
 		final HttpServer server = vertx.createHttpServer();
 		final String listenHost = config.getString(LISTEN_HOST);
 		final int listenPort = 
@@ -46,18 +49,19 @@ public abstract class AbstractVestVerticle extends Verticle implements VestServi
 		try {
 		
 		VestApplication application = createApplication(config);
-		application.addSingleton(container, vertx);
+		application.addSingleton(vertx, context);
 		
 		//A hook to add to the VestApplication once it has been created.
 		postApplicationCreationProcess(application);
 		
-		final RouteMatcherBuilder routeBuilder = createBuilder(
+		final RouterBuilder routeBuilder = createBuilder(
 				application);
 		
 		postRouteMatcherBuilderCreationProcess(routeBuilder);
+
+        final Router router = routeBuilder.build();
 		
-		server.requestHandler(
-				routeBuilder.build());
+		server.requestHandler( request -> router.accept(request));
 		
 		//Set listen information
 		if(listenHost == null) {
@@ -71,7 +75,7 @@ public abstract class AbstractVestVerticle extends Verticle implements VestServi
 		}
 	}
 	
-	public void postRouteMatcherBuilderCreationProcess(RouteMatcherBuilder routeBuilder) { }
+	public void postRouteMatcherBuilderCreationProcess(RouterBuilder routeBuilder) { }
 
 	/**
 	 * Override this method to add post processing once the {@link VestApplication} has been created.

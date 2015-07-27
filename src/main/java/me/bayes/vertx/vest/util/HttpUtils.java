@@ -3,16 +3,9 @@
  */
 package me.bayes.vertx.vest.util;
 
+import javax.ws.rs.HttpMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HEAD;
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 
 /**
  * @author kevinbayes
@@ -21,8 +14,8 @@ import javax.ws.rs.PUT;
 public final class HttpUtils {
 	
 	/**
-	 * Look for the HTTP verb which should be {@link GET}, {@link POST}, {@link PUT}, {@link DELETE}, {@link OPTIONS} or {@link HEAD}.
-	 * 
+	 * Look for the HTTP verb which should be {@link javax.ws.rs.GET}, {@link javax.ws.rs.POST}, {@link javax.ws.rs.PUT}, {@link javax.ws.rs.DELETE}, {@link javax.ws.rs.OPTIONS} or {@link javax.ws.rs.HEAD}.
+	 *
 	 * @param method - that potentially has an annotation.
 	 * @return {@link HttpMethod} or null.
 	 */

@@ -15,70 +15,62 @@
  */
 package me.bayes.vertx.vest;
 
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+
+import io.vertx.core.impl.verticle.PackageHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.tools.JavaFileObject;
-import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
-
-import me.bayes.vertx.vest.deploy.RootContextVestApplication;
-
-import org.vertx.java.core.logging.Logger;
-import org.vertx.java.core.logging.impl.LoggerFactory;
-import org.vertx.java.platform.impl.java.PackageHelper;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 /**
  * <pre>
- * An abstract implementation of a jaxrs {@link Application} for the Vest framework.
- * 
- * This class should be extended by any application using vest inorder to set the 
- * {@link ApplicationPath} annotation for the starting context of your application.
- * Example can be seen in the {@link RootContextVestApplication} where the {@link ApplicationPath}
+ * An abstract implementation of a jaxrs {@link javax.ws.rs.core.Application} for the Vest framework.
+ *
+ * This class should be extended by any application using vest inorder to set the
+ * {@link javax.ws.rs.ApplicationPath} annotation for the starting context of your application.
+ * Example can be seen in the {@link RootContextVestApplication} where the {@link javax.ws.rs.ApplicationPath}
  * annotation is used to ensure that the rest service is located on '/'.
  * </pre>
- * 
+ *
  * @author Kevin Bayes
  * @since 1.0
  * @version 1.0
  */
 public abstract class VestApplication extends Application {
-	
+
 	private final static Logger LOG = LoggerFactory.getLogger(VestApplication.class);
-	
+
 	/*
 	 * Classloader to load scanned classes.
 	 */
 	private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-	
+
 	/*
 	 * Used if you want to scan packages for all classes annotated with
 	 * @Path.
 	 */
 	private Set<String> packagesToScan = new HashSet<String>(0);
-	
+
 	/*
 	 * Used to specify the classes annotated with @Path.
 	 */
-	private final Set<Class<?>> endpointClasses = new HashSet<Class<?>>(0); 
-	
+	private final Set<Class<?>> endpointClasses = new HashSet<Class<?>>(0);
+
 	/*
 	 * Store all the singleton instances.
 	 */
 	private final Set<Object> singletons = new HashSet<Object>(0);
-	
+
 	/*
 	 * Map of shared properties
 	 */
 	private final Map<String, Object> properties = new HashMap<String, Object>(0);
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see javax.ws.rs.core.Application#getClasses()
@@ -87,31 +79,31 @@ public abstract class VestApplication extends Application {
 	public Set<Class<?>> getClasses() {
 		return endpointClasses;
 	}
-	
+
 	@Override
 	public Set<Object> getSingletons() {
 		return singletons;
 	}
-	
+
 	@Override
 	public Map<String, Object> getProperties() {
 		return properties;
 	}
-	
-	
+
+
 	public Set<String> getPackagesToScan() {
 		return packagesToScan;
 	}
 
-	
+
 	/**
-	 * @param packagesToScan for classes annotated with {@link Path}. 
+	 * @param packagesToScan for classes annotated with {@link javax.ws.rs.Path}.
 	 */
 	public void addPackagesToScan(Collection<String> packagesToScan) {
 		this.packagesToScan.addAll(packagesToScan);
 		addScannedClasses();
 	}
-	
+
 	public void addPackagesToScan(String... packagesToScan) {
 		this.packagesToScan.addAll(Arrays.asList(packagesToScan));
 		addScannedClasses();
@@ -121,10 +113,10 @@ public abstract class VestApplication extends Application {
 		return endpointClasses;
 	}
 
-	
+
 	/**
-	 * @param endpointClasses to add to the classes annotated with {@link Path}. 
-	 * 		  If not annotated with {@link Path} it will be ignored.
+	 * @param endpointClasses to add to the classes annotated with {@link javax.ws.rs.Path}.
+	 * 		  If not annotated with {@link javax.ws.rs.Path} it will be ignored.
 	 */
 	public void addEndpointClasses(Collection<Class<?>> endpointClasses) {
 		for(Class<?> clazz : endpointClasses) {

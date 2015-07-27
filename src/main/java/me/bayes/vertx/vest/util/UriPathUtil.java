@@ -16,7 +16,6 @@
 package me.bayes.vertx.vest.util;
 
 import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
 /**
@@ -30,35 +29,35 @@ public final class UriPathUtil {
 	
 	/**
 	 * Retrieve the context from the provided {@link Application}'s {@link ApplicationPath}.
-	 * 
+	 *
 	 * @param application with a {@link ApplicationPath} annotation.
 	 * @return String of the path.
 	 */
 	public static String getApplicationContext(Application application) {
-		
+
 		final Class<?> clazz = application.getClass();
 		final ApplicationPath applicationPath = clazz.getAnnotation(ApplicationPath.class);
-		
+
 		String path = (applicationPath == null) ? "/" :
 			applicationPath.value();
-		
+
 		if(path.length() < 1) {
 			return "/";
 		} else {
 			return path.charAt(0) == '/' ? path : "/" + path;
 		}
 	}
-	
-	
+
+
 	/**
 	 * Concat paths to a single one in the form of parent/child.
-	 * 
-	 * @param parent 
+	 *
+	 * @param parent
 	 * @param child
 	 * @return a url in {@link String} form.
 	 */
 	public static String concatPaths(String parent, String child) {
-		
+
 		if(parent.endsWith("/") ^ child.startsWith("/")) {
 			return parent + child;
 		} else if(!parent.endsWith("/") && !child.startsWith("/")) {
@@ -68,12 +67,12 @@ public final class UriPathUtil {
 		} else {
 			return (parent + child).replaceAll("//", "/");
 		}
-		
+
 	}
-	
-	
+
+
 	/**
-	 * Taken path declared in a {@link Path} annotation and replaces it with
+	 * Taken path declared in a {@link javax.ws.rs.Path} annotation and replaces it with
 	 * a vertx compliant path. 
 	 * 
 	 * http://vertx.io/core_manual_java.html#extracting-parameters-from-the-path

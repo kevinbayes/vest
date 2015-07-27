@@ -15,11 +15,11 @@
  */
 package me.bayes.vertx.vest.util;
 
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-
-import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.core.http.HttpServerResponse;
 
 /**
  * @author kevinbayes
@@ -27,10 +27,8 @@ import org.vertx.java.core.http.HttpServerResponse;
  */
 public class HttpServerResponseParameterHandler implements ParameterHandler<HttpServerResponse> {
 
-	@Override
 	public HttpServerResponse handle(final Method method, Class<?> parameterType,
-			Annotation[] annotations, HttpServerRequest request) {
-		return request.response();
+			Annotation[] annotations, RoutingContext context) {
+		return context.request().response();
 	}
-
 }

@@ -15,13 +15,13 @@
  */
 package me.bayes.vertx.vest.deploy;
 
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import me.bayes.vertx.vest.AbstractVestVerticle;
-import me.bayes.vertx.vest.DefaultRouteMatcherBuilder;
-import me.bayes.vertx.vest.RouteMatcherBuilder;
+import me.bayes.vertx.vest.DefaultRouterBuilder;
+import me.bayes.vertx.vest.RouterBuilder;
 import me.bayes.vertx.vest.VestApplication;
 
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
 
 
 /**
@@ -39,8 +39,8 @@ public class VestVerticle extends AbstractVestVerticle {
 
 	public VestApplication createApplication(final JsonObject config) throws Exception {
 		
-		final JsonArray vestPackagesToScan = config.getArray("vestPackagesToScan");
-		final JsonArray vestClasses = config.getArray("vestClasses");
+		final JsonArray vestPackagesToScan = config.getJsonArray("vestPackagesToScan");
+		final JsonArray vestClasses = config.getJsonArray("vestClasses");
 		final String applicationClass = config.getString("applicationClass", "me.bayes.vertx.vest.deploy.RootContextVestApplication");
 		final VestApplication application = (VestApplication) Class.forName(applicationClass).newInstance();
 		
@@ -59,17 +59,17 @@ public class VestVerticle extends AbstractVestVerticle {
 			}
 		}
 		
-		application.addSingleton(container == null ? null : container.config());
 		application.addSingleton(vertx);
-		application.addSingleton(container);
+		application.addSingleton(getVertx().getOrCreateContext());
+		application.addSingleton(getVertx().getOrCreateContext().config());
 		
 		return application;
 	}
 
 
-	public RouteMatcherBuilder createBuilder(VestApplication application)
+	public RouterBuilder createBuilder(VestApplication application)
 			throws Exception {
-		return new DefaultRouteMatcherBuilder(application);
+		return new DefaultRouterBuilder(application);
 	}
 
 }

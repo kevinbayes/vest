@@ -13,24 +13,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package refer.api.jaxrs.vest;
+package me.bayes.vertx.vest;
 
-import io.vertx.core.http.HttpMethod;
-import io.vertx.ext.apex.Route;
-import io.vertx.ext.apex.Router;
-import io.vertx.ext.apex.RoutingContext;
-import io.vertx.ext.apex.handler.BodyHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import io.vertx.core.Handler;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
-import refer.api.jaxrs.vest.binding.DefaultRouteBindingHolderFactory;
-import refer.api.jaxrs.vest.binding.RouteBindingHolder;
-import refer.api.jaxrs.vest.util.DefaultParameterResolver;
-import refer.api.jaxrs.vest.util.ParameterResolver;
-import refer.api.jaxrs.vest.util.UriPathUtil;
+import io.vertx.ext.web.Route;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
+import me.bayes.vertx.vest.binding.DefaultRouteBindingHolderFactory;
+import me.bayes.vertx.vest.binding.RouteBindingHolder;
+import me.bayes.vertx.vest.util.DefaultParameterResolver;
+import me.bayes.vertx.vest.util.ParameterResolver;
+import me.bayes.vertx.vest.util.UriPathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -75,7 +76,7 @@ public class DefaultRouterBuilder extends AbstractRouterBuilder {
 	private final ParameterResolver parameterResolver;
 
 	/**
-	 * Requires a {@link refer.api.jaxrs.vest.VestApplication}.
+	 * Requires a {@link VestApplication}.
 	 * @param application
 	 */
 	public DefaultRouterBuilder(final VestApplication application) {

@@ -15,21 +15,19 @@
  */
 package me.bayes.vertx.vest.binding;
 
-import java.lang.reflect.Method;
-import java.util.Set;
+import me.bayes.vertx.vest.VestApplication;
+import me.bayes.vertx.vest.util.ContextUtil;
+import me.bayes.vertx.vest.util.HttpUtils;
+import me.bayes.vertx.vest.util.UriPathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-
-import me.bayes.vertx.vest.VestApplication;
-import me.bayes.vertx.vest.util.ContextUtil;
-import me.bayes.vertx.vest.util.HttpUtils;
-import me.bayes.vertx.vest.util.UriPathUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.reflect.Method;
+import java.util.Set;
 
 /**
  * @author Kevin Bayes
@@ -39,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultRouteBindingHolderFactory implements
 		RouteBindingHolderFactory {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultRouteBindingHolderFactory.class);
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	private VestApplication application;
 	private RouteBindingHolder bindingHolder;
@@ -71,8 +69,8 @@ public class DefaultRouteBindingHolderFactory implements
 	
 	/**
 	 * 
-	 * @param routeMatcher
 	 * @param clazz
+	 * @param contextPath
 	 * @throws Exception
 	 */
 	private void addClassBindings(final Class<?> clazz, String contextPath) throws Exception {
@@ -106,7 +104,6 @@ public class DefaultRouteBindingHolderFactory implements
 	
 	/**
 	 * 
-	 * @param routeMatcher
 	 * @param clazz
 	 * @param instance 
 	 * @param path
@@ -124,7 +121,7 @@ public class DefaultRouteBindingHolderFactory implements
 		
 		//3.3.1	Visibility Only public methods may be exposed as resource methods.
 		if(method.getModifiers() != Method.PUBLIC) {
-			LOG.warn("Method {} is not public and is annotated with @Path.", method.getName());
+			log.warn("Method {} is not public and is annotated with @Path.", method.getName());
 		}
 		
 		addBinding(clazz, method, instance, httpMethod, 
@@ -134,9 +131,8 @@ public class DefaultRouteBindingHolderFactory implements
 	
 	
 	/**
-	 * The simplest case adds routes and delegates the execution to the method annotated with the {@link Path} annotation. 
+	 * The simplest case adds routes and delegates the execution to the method annotated with the {@link Path} annotation.
 	 * 
-	 * @param routeMatcher
 	 * @param clazz
 	 * @param method
 	 * @param httpMethod

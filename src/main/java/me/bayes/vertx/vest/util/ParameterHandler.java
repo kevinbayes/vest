@@ -15,10 +15,11 @@
  */
 package me.bayes.vertx.vest.util;
 
+
+import io.vertx.ext.web.RoutingContext;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-
-import org.vertx.java.core.http.HttpServerRequest;
 
 /**
  * The parameter handler resolves the value of the parameter.
@@ -41,8 +42,8 @@ public interface ParameterHandler<R> {
 	 * @param method
 	 * @param parameterType
 	 * @param annotations
-	 * @param request
+	 * @param routingContext
 	 * @return
 	 */
-	R handle(final Method method, final Class<?> parameterType, final Annotation[] annotations, final HttpServerRequest request);
+	R handle(final Method method, final Class<?> parameterType, final Annotation[] annotations, final RoutingContext routingContext);
 }

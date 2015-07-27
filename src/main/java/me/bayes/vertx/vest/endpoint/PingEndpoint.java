@@ -22,10 +22,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
 import me.bayes.vertx.vest.handler.VertxAwareHandler;
 
-import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.core.http.HttpServerResponse;
 
 @Path("/ping")
 public class PingEndpoint extends VertxAwareHandler {

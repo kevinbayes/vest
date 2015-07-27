@@ -1,13 +1,12 @@
-package refer.api.jaxrs.vest;
+package me.bayes.vertx.vest;
 
 
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.ext.apex.Router;
-import refer.api.jaxrs.ReferApplication;
+import io.vertx.ext.web.Router;
 
 /**
- * The {@link RouterBuilder} builds a {@link io.vertx.ext.apex.Router} that vertx uses to
+ * The {@link RouterBuilder} builds a {@link io.vertx.ext.web.Router} that vertx uses to
  * route messages.
  *
  * The {@link RouterBuilder} is an implementation of the strategy pattern allowing
@@ -15,13 +14,12 @@ import refer.api.jaxrs.ReferApplication;
  *
  * @author Kevin Bayes
  * @since 1.0
- * @version 1.0
  */
 public interface RouterBuilder {
 
 
     /**
-     * Executing this method ensures that a {@link io.vertx.ext.routematcher.RouteMatcher} is built.
+     * Executing this method ensures that a {@link io.vertx.ext.web.impl.RouterImpl} is built.
      *
      * @return
      * @throws Exception

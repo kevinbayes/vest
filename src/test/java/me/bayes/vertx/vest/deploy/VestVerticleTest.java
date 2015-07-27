@@ -19,12 +19,12 @@ import static org.junit.Assert.*;
 
 import javax.ws.rs.core.Application;
 
+import io.vertx.core.json.JsonObject;
 import me.bayes.vertx.vest.deploy.VestVerticle;
 import me.bayes.vertx.vest.sample.PingEndpoint;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.vertx.java.core.json.JsonObject;
 
 /**
  * @author kevinbayes

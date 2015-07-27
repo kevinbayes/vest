@@ -15,18 +15,13 @@
  */
 package me.bayes.vertx.vest.binding;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * All the properties that the context should contain.
@@ -106,7 +101,7 @@ public class RouteBindingHolder {
 		}
 
 		bindings_.add(new MethodBinding(instance, clazz, method,
-				consumes == null ? new String[]{MediaType.TEXT_PLAIN} : consumes.value(), 
+				consumes == null ? new String[]{MediaType.TEXT_PLAIN} : consumes.value(),
 						produces == null ? new String[]{MediaType.TEXT_PLAIN} : produces.value()));
 		
 	}

@@ -32,44 +32,48 @@
   </developers>
   
   <properties>
-  	<vertx.version>3.0.0-dev_preview1</vertx.version>
-  	<vertx.test.version>2.0.3-final</vertx.test.version>
-  	<vertx.test.framework.version>2.0.0-final</vertx.test.framework.version>
+  	<vertx.version>3.0.0</vertx.version>
+  	<vertx.test.version>3.0.0</vertx.test.version>
+  	<vertx.test.framework.version>3.0.0</vertx.test.framework.version>
   	<jaxrs.version>2.0</jaxrs.version>
   	<junit.version>4.11</junit.version>
   </properties>
   
   
   <dependencies>
+
   	<dependency>
   		<groupId>io.vertx</groupId>
   		<artifactId>vertx-core</artifactId>
   		<version>${vertx.version}</version>
   		<scope>provided</scope>
   	</dependency>
-  	
-  	<dependency>
-	    <groupId>io.vertx</groupId>
-	    <artifactId>vertx-platform</artifactId>
-	    <version>${vertx.version}</version>
-	    <scope>provided</scope>
-	</dependency>
-  	
-	<dependency>
-	    <groupId>io.vertx</groupId>
-    	<artifactId>testtools</artifactId>
-	    <version>${vertx.test.version}</version>
-	    <scope>test</scope>
-	</dependency>
+
+      <dependency>
+          <groupId>io.vertx</groupId>
+          <artifactId>vertx-web</artifactId>
+          <version>${vertx.version}</version>
+          <scope>provided</scope>
+      </dependency>
 	
 	<dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-testframework</artifactId>
-      <version>${vertx.test.framework.version}</version>
+      <artifactId>vertx-core</artifactId>
+      <version>${vertx.version}</version>
+      <type>test-jar</type>
       <scope>test</scope>
     </dependency>
 
-  	<dependency>
+
+
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.2</version>
+    </dependency>
+
+
+      <dependency>
 	    <groupId>javax.ws.rs</groupId>
 	    <artifactId>javax.ws.rs-api</artifactId>
 	    <version>${jaxrs.version}</version>
@@ -96,8 +100,8 @@
   			<artifactId>maven-compiler-plugin</artifactId>
   			<version>3.1</version>
   			<configuration>
-  				<source>1.7</source>
-  				<target>1.7</target>
+  				<source>1.8</source>
+  				<target>1.8</target>
   			</configuration>
   		</plugin>
   		<plugin>

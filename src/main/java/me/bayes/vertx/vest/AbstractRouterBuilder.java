@@ -13,17 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package refer.api.jaxrs.vest;
+package me.bayes.vertx.vest;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.ext.apex.Router;
-import io.vertx.ext.apex.impl.RouterImpl;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.impl.RouterImpl;
+import me.bayes.vertx.vest.binding.RouteBindingHolder;
+import me.bayes.vertx.vest.binding.RouteBindingHolderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import refer.api.jaxrs.vest.binding.RouteBindingHolder;
-import refer.api.jaxrs.vest.binding.RouteBindingHolderFactory;
 
 /**
  * @author Kevin Bayes
@@ -87,7 +87,7 @@ public abstract class AbstractRouterBuilder implements RouterBuilder {
 	}
 	
 	/**
-	 * This builds a holder of the bindings that will be used to create the {@link io.vertx.ext.apex.Router}.
+	 * This builds a holder of the bindings that will be used to create the {@link io.vertx.ext.web.Router}.
 	 * 
 	 * @throws Exception
 	 */
@@ -98,7 +98,7 @@ public abstract class AbstractRouterBuilder implements RouterBuilder {
 	/**
 	 * Implement this method to add your logic.
 	 * 
-	 * @return a {@link io.vertx.ext.apex.Router}
+	 * @return a {@link io.vertx.ext.web.Router}
 	 * @throws Exception
 	 */
 	protected abstract Router buildInternal() throws Exception;
