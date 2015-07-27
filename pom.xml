@@ -32,7 +32,7 @@
   </developers>
   
   <properties>
-  	<vertx.version>2.1.1</vertx.version>
+  	<vertx.version>3.0.0-dev_preview1</vertx.version>
   	<vertx.test.version>2.0.3-final</vertx.test.version>
   	<vertx.test.framework.version>2.0.0-final</vertx.test.framework.version>
   	<jaxrs.version>2.0</jaxrs.version>
@@ -112,18 +112,46 @@
 		    </execution>
 		  </executions>
 		</plugin>
-		<plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-javadoc-plugin</artifactId>
-		  <executions>
-		    <execution>
-		      <id>attach-javadocs</id>
-		      <goals>
-		        <goal>jar</goal>
-		      </goals>
-		    </execution>
-		  </executions>
-		</plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>copy-dependencies</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>copy-dependencies</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${project.build.directory}/lib/${project.groupId}</outputDirectory>
+                        <overWriteReleases>false</overWriteReleases>
+                        <overWriteSnapshots>false</overWriteSnapshots>
+                        <overWriteIfNewer>true</overWriteIfNewer>
+                        <excludeTransitive>false</excludeTransitive>
+                        <includeScope>runtime</includeScope>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+
+        <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.2</version>
+            <configuration>
+                <descriptors>
+                    <descriptor>src/main/assembly/uber-jar.xml</descriptor>
+                </descriptors>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>jar-with-dependencies</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
   	</plugins>
   </build>
   

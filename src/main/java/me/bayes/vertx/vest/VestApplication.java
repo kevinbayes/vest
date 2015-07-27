@@ -189,8 +189,7 @@ public abstract class VestApplication extends Application {
 	}
 	
 	/**
-	 * TODO: WARN on same type insertions.
-	 * 
+	 * Add singleton classes to access at a later stage
 	 * @param singleton
 	 */
 	public void addSingleton(Object... singleton) {
