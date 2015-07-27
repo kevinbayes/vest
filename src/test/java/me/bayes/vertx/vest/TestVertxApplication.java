@@ -41,7 +41,7 @@ public class TestVertxApplication {
 		
 		//Then
 		assertTrue(application.getClasses().size() == 1);
-		assertTrue(application.getClasses().contains(PingEndpoint.class));
+		assertTrue(application.getEndpointClasses().contains(PingEndpoint.class));
 	}
 	
 	@Test

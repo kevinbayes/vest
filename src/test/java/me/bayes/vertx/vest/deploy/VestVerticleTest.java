@@ -59,6 +59,7 @@ public class VestVerticleTest {
 			application = vestVerticle.createApplication(config);
 		 
 		} catch (Exception e) {
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 		
@@ -87,6 +88,7 @@ public class VestVerticleTest {
 			application = vestVerticle.createApplication(config);
 		 
 		} catch (Exception e) {
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 		

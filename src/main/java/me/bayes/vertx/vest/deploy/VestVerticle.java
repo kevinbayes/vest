@@ -60,8 +60,10 @@ public class VestVerticle extends AbstractVestVerticle {
 		}
 		
 		application.addSingleton(vertx);
-		application.addSingleton(getVertx().getOrCreateContext());
-		application.addSingleton(getVertx().getOrCreateContext().config());
+		if(vertx != null) {
+			application.addSingleton(vertx.getOrCreateContext());
+			application.addSingleton(vertx.getOrCreateContext().config());
+		}
 		
 		return application;
 	}
